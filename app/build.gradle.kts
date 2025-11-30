@@ -88,6 +88,12 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")
 
+    implementation("com.google.firebase:firebase-auth-ktx:23.2.1") // Or latest
+
+    implementation("com.google.android.gms:play-services-auth:21.4.0")
+    // For example, declare the dependencies for Firebase Authentication and Cloud Firestore
+    implementation ("com.google.firebase:firebase-firestore")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

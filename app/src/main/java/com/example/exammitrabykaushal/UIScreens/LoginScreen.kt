@@ -1,6 +1,10 @@
 package com.example.exammitrabykaushal.UIScreens
 
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -27,6 +31,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.exammitrabykaushal.ViewModel.LoginViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +43,44 @@ fun LoginScreen(
     onNavigateToPhone: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    // 1. Google Auth Logic Setup
+    val googleAuthClient = remember { GoogleAuthClient(context) }
+    val viewModel: LoginViewModel = viewModel()
+    val state by viewModel.state.collectAsState()
+
+    // 2. Launcher for Google Sign-In Intent
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    )
+    { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            scope.launch {
+                val signInResult = googleAuthClient.signInWithIntent(
+                    intent = result.data ?: return@launch
+                )
+                viewModel.onSignInResult(signInResult)
+            }
+        }
+    }
+
+    // 3. Handle Success/Failure
+    LaunchedEffect(key1 = state.isSignInSuccessful) {
+        if (state.isSignInSuccessful) {
+            Toast.makeText(context, "Sign in successful", Toast.LENGTH_LONG).show()
+            SessionManager.setLoggedIn(context, true)
+            onLoginSuccess()
+            viewModel.resetState()
+        }
+    }
+
+    LaunchedEffect(key1 = state.signInError) {
+        state.signInError?.let { error ->
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+        }
+    }
+
 
     // Theme Colors
     val BluePrimary = Color(0xFF1565C0)
@@ -186,7 +231,19 @@ fun LoginScreen(
                 text = "Google",
                 icon = Icons.Default.AccountCircle, // Using Globe as generic "Web/Google" icon
                 modifier = Modifier.weight(1f),
-                onClick = { /* Handle Google Login */ }
+                onClick = {
+                    // 4. Trigger Google Sign In Logic
+                    scope.launch {
+                        val sender = googleAuthClient.signIn()
+                        if (sender != null) {
+                            launcher.launch(
+                                IntentSenderRequest.Builder(sender).build()
+                            )
+                        } else {
+                            Toast.makeText(context, "Google Sign In Failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             )
             SocialButton(
                 text = "Phone",
