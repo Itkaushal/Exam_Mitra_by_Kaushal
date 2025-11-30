@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "965840160940",
+    "project_id": "exam-mitra-5c5b6",
+    "storage_bucket": "exam-mitra-5c5b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965840160940:android:a63f7b8e20388c2d783709",
+        "android_client_info": {
+          "package_name": "com.example.exammitrabykaushal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6J9eWsWdQaUYPvdH2PW1UqvpVzlBI4tQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
