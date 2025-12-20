@@ -1,5 +1,7 @@
 package com.example.exammitrabykaushal.UIScreens
 
+
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,28 +10,32 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onBack: () -> Unit,
     onLogout: () -> Unit, // New callback for logging out
-    onNavigateToHistory: () -> Unit
+    onNavigateToHistory: () -> Unit,
+    onNavigateToNotification: () -> Unit
 ) {
     val context = LocalContext.current
-
-    // 1. Get User Name from Session Manager
     var userName by remember { mutableStateOf(SessionManager.getUserName(context)) }
+    val userPhoto = SessionManager.getUserPhoto(context)
 
     // State for Edit Dialog
     var showEditDialog by remember { mutableStateOf(false) }
@@ -66,7 +72,7 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // --- SECTION 1: USER HEADER ---
+            // User Profile section--------------------------------
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -74,35 +80,47 @@ fun ProfileScreen(
                         brush = Brush.verticalGradient(
                             colors = listOf(Color(0xFF1565C0), Color(0xFF42A5F5))
                         ),
-                        shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
+                        shape = RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp)
                     )
                     .padding(bottom = 32.dp, top = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
+                // User Profile Image----------------------------
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    // Profile Image
                     Surface(
                         modifier = Modifier.size(100.dp),
                         shape = CircleShape,
                         color = Color.White,
                         border = androidx.compose.foundation.BorderStroke(3.dp, Color(0xFFFF9800))
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        if (userPhoto != null) {
+                            AsyncImage(
+                                model = userPhoto,
+                                contentDescription = "Profile Image",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else{
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // 2. Display Dynamic Name
+                    // Display User Name-----------------
                     Text(
                         text = userName,
                         style = MaterialTheme.typography.headlineSmall,
                         color = Color.White,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        letterSpacing = 1.sp,
+                        fontFamily = FontFamily.Serif
+
                     )
                     Text(
                         text = "SSC CGL • Target 2024",
@@ -151,15 +169,16 @@ fun ProfileScreen(
                     title = "Edit Profile",
                     onClick = { showEditDialog = true }
                 )
-
-                ProfileOptionCard(icon = Icons.Default.Notifications, title = "Notifications", onClick = {})
-                ProfileOptionCard(icon = Icons.Default.MoreVert, title = "Test History", onClick = {onNavigateToHistory()})
+                // notification click action
+                ProfileOptionCard(icon = Icons.Default.Notifications, title = "Notifications", onClick = {onNavigateToNotification()})
+                // test history click action
+                ProfileOptionCard(icon = Icons.Default.HistoryToggleOff, title = "Test History", onClick = {onNavigateToHistory()})
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 4. Logout Click Action
                 ProfileOptionCard(
-                    icon = Icons.Default.ExitToApp,
+                    icon = Icons.Default.Logout,
                     title = "Logout",
                     isDestructive = true,
                     onClick = {
@@ -231,20 +250,39 @@ fun EditProfileDialog(currentName: String, onDismiss: () -> Unit, onSave: (Strin
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Edit Profile") },
+        shape = AlertDialogDefaults.shape,
+        icon = { Icons.Default.Edit},
+        title = { Text("Edit Profile", fontWeight = FontWeight.W700, fontFamily = FontFamily.Serif) },
         text = {
             Column {
-                Text("Update your display name:")
+                Text("Update your display name:", color = Color.Blue)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
-                    singleLine = true
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedTextColor = Color.Blue.copy(alpha = 0.5f),
+                        unfocusedIndicatorColor = Color.Blue.copy(alpha = 0.5f),
+                        focusedTextColor = Color.Blue,
+                        focusedIndicatorColor = Color.Blue,
+                        focusedPlaceholderColor = Color.Blue,
+                        unfocusedPlaceholderColor = Color.Blue.copy(0.5f)
+                    )
                 )
             }
         },
         confirmButton = {
-            Button(onClick = { onSave(text) }) {
+            Button(
+                onClick = { onSave(text) },
+                shape = RoundedCornerShape(100.dp),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.Black,
+                    containerColor = Color.Cyan.copy(alpha = 0.4f)
+                ),
+                border = BorderStroke(1.dp, color = Color.Black)
+
+                ) {
                 Text("Save")
             }
         },

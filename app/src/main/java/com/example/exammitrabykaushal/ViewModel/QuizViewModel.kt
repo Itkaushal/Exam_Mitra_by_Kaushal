@@ -1,3 +1,4 @@
+/*
 package com.example.exammitrabykaushal.ViewModel
 
 import android.app.Application
@@ -101,4 +102,99 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
 
         _isFinished.value = true
     }
+}*/
+
+package com.example.exammitrabykaushal.ViewModel
+
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+// --------- Question model used by the screen ----------
+data class Question(
+    val id: String,
+    val text: String,
+    val options: List<String>,
+    val correctIndex: Int,
+    val explanation: String = "" // explanation shown in review
+)
+
+// --------- Simple ViewModel (in-memory sample) ----------
+class QuizViewModel : ViewModel() {
+
+    // Questions list
+    private val _questions = MutableStateFlow<List<Question>>(emptyList())
+    val questions: StateFlow<List<Question>> = _questions.asStateFlow()
+
+    // user's selected answers: map questionId -> selectedOptionIndex
+    private val _userAnswers = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val userAnswers: StateFlow<Map<String, Int>> = _userAnswers.asStateFlow()
+
+    // current question index
+    private val _currentQuestionIndex = MutableStateFlow(0)
+    val currentQuestionIndex: StateFlow<Int> = _currentQuestionIndex.asStateFlow()
+
+    // finished state
+    private val _isFinished = MutableStateFlow(false)
+    val isFinished: StateFlow<Boolean> = _isFinished.asStateFlow()
+
+    // score (computed when finished)
+    private val _score = MutableStateFlow(0)
+    val score: StateFlow<Int> = _score.asStateFlow()
+
+    // loadQuestions (dummy for now) — you can replace to fetch from repo
+    fun loadQuestions(category: String) {
+        // create dummy list (10 qns)
+        val sample = (1..10).map { i ->
+            Question(
+                id = "q$i",
+                text = "$category: Sample Question #$i - Identify the right answer",
+                options = listOf("Option A", "Option B", "Option C", "Option D"),
+                correctIndex = (i % 4),
+                explanation = "Explanation for question #$i: Reasoning and tips to solve this question."
+            )
+        }
+        _questions.value = sample
+        _userAnswers.value = emptyMap()
+        _currentQuestionIndex.value = 0
+        _isFinished.value = false
+        _score.value = 0
+    }
+
+    fun selectOption(questionId: String, optionIndex: Int) {
+        val updated = _userAnswers.value.toMutableMap()
+        updated[questionId] = optionIndex
+        _userAnswers.value = updated
+    }
+
+    fun nextQuestion() {
+        val max = _questions.value.size
+        if (_currentQuestionIndex.value < max - 1) {
+            _currentQuestionIndex.value += 1
+        } else {
+            finishQuiz()
+        }
+    }
+
+    fun previousQuestion() {
+        if (_currentQuestionIndex.value > 0) _currentQuestionIndex.value -= 1
+    }
+
+    fun goToQuestion(index: Int) {
+        if (index in 0 until _questions.value.size) _currentQuestionIndex.value = index
+    }
+
+    fun finishQuiz() {
+        // compute score
+        val qs = _questions.value
+        var s = 0
+        for (q in qs) {
+            val sel = _userAnswers.value[q.id]
+            if (sel != null && sel == q.correctIndex) s++
+        }
+        _score.value = s
+        _isFinished.value = true
+    }
 }
+

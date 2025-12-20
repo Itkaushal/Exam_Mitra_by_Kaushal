@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Exam Mitra by Kaushal</string>
+    <string name="default_web_client_id">965840160940-4a41bs91b9pq70kpf86o3nuichgelh8n.apps.googleusercontent.com</string>
+    <string name="ADMOB_APP_ID">ca-app-pub-3940256099942544~3347511713</string>
 </resources>

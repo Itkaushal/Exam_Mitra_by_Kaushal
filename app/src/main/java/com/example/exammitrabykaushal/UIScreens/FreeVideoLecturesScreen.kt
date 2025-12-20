@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // Data class to hold Exam Details
-data class ExamCategory(
+data class SubjectCategory(
     val name: String,
     val icon: Painter,
     val colorStart: Color,
@@ -36,29 +36,29 @@ data class ExamCategory(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PYQSelectionScreen(
-    onExamSelected: (String) -> Unit,
+fun FreeVideoLecturesScreen(
+    onSubjectSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
     // Theme Colors
     val BluePrimary = Color(0xFF1565C0)
 
     // List of Exams
-    val examList = listOf(
-        ExamCategory("UPSC CSE", painterResource(id = R.drawable.statevideo), Color(0xFF5C6BC0), Color(0xFF3949AB)),
-        ExamCategory("SSC CGL", painterResource(id = R.drawable.upscvideo), Color(0xFF66BB6A), Color(0xFF43A047)),
-        ExamCategory("SSC CHSL/MTS", painterResource(id = R.drawable.sscvideo), Color(0xFFFFA726), Color(0xFFFB8C00)),
-        ExamCategory("SSC JE", painterResource(id = R.drawable.sscvideo), Color(0xFFEC407A), Color(0xFFD81B60)),
-        ExamCategory("RRB NTPC", painterResource(id = R.drawable.trainvideo), Color(0xFF29B6F6), Color(0xFF039BE5)),
-        ExamCategory("RRB Group D", painterResource(id = R.drawable.trainvideo), Color(0xFF7E57C2), Color(0xFF5E35B1)),
-        ExamCategory("State PSC", painterResource(id = R.drawable.statevideo), Color(0xFFFF7043), Color(0xFFF4511E)),
-        ExamCategory("Banking/IBPS", painterResource(id = R.drawable.bankinvideo), Color(0xFF26A69A), Color(0xFF00897B))
+    val subjectList = listOf(
+        SubjectCategory("Maths", painterResource(id = R.drawable.mathvideo), Color(0xFF5C6BC0), Color(0xFF3949AB)),
+        SubjectCategory("Reasoning", painterResource(id = R.drawable.reasoningvideo), Color(0xFF66BB6A), Color(0xFF43A047)),
+        SubjectCategory("GK/GS", painterResource(id = R.drawable.gkgsvideo), Color(0xFFFFA726), Color(0xFFFB8C00)),
+        SubjectCategory("English", painterResource(id = R.drawable.english), Color(0xFFEC407A), Color(0xFFD81B60)),
+        SubjectCategory("Hindi", painterResource(id = R.drawable.hindivideo), Color(0xFF29B6F6), Color(0xFF039BE5)),
+        SubjectCategory("Science", painterResource(id = R.drawable.sciencevideo), Color(0xFF7E57C2), Color(0xFF5E35B1)),
+        SubjectCategory("Computer", painterResource(id = R.drawable.computervideo), Color(0xFFFF7043), Color(0xFFF4511E)),
+        SubjectCategory("Current Affairs", painterResource(id = R.drawable.cavideo), Color(0xFF26A69A), Color(0xFF00897B))
     )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Select Exam Category", fontWeight = FontWeight.SemiBold) },
+                title = { Text("Select Subject Category", fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -81,13 +81,13 @@ fun PYQSelectionScreen(
         ) {
             // Header Section
             Text(
-                "Previous Year Papers",
+                "Free Video Lectures",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                "Practice with actual questions from past exams.",
+                "Learn Each Subject to Watch Videos.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 4.dp)
@@ -102,8 +102,8 @@ fun PYQSelectionScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                items(examList) { exam ->
-                    ExamCard(exam = exam, onClick = { onExamSelected(exam.name) })
+                items(subjectList) { subject ->
+                    SubjectCard(subject = subject, onClick = { onSubjectSelected(subject.name) })
                 }
             }
         }
@@ -111,7 +111,7 @@ fun PYQSelectionScreen(
 }
 
 @Composable
-fun ExamCard(exam: ExamCategory, onClick: () -> Unit) {
+fun SubjectCard(subject: SubjectCategory, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,7 +126,7 @@ fun ExamCard(exam: ExamCategory, onClick: () -> Unit) {
                 .fillMaxSize()
                 .background(
                     brush = Brush.verticalGradient(
-                        colors = listOf(exam.colorStart, exam.colorEnd)
+                        colors = listOf(subject.colorStart, subject.colorEnd)
                     )
                 )
         ) {
@@ -147,7 +147,7 @@ fun ExamCard(exam: ExamCategory, onClick: () -> Unit) {
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            painter = exam.icon,
+                            painter = subject.icon,
                             contentDescription = null,
                             tint = Color.Unspecified, // Shows original logo colors
                             modifier = Modifier.size(30.dp)
@@ -159,7 +159,7 @@ fun ExamCard(exam: ExamCategory, onClick: () -> Unit) {
 
                 // Text
                 Text(
-                    text = exam.name,
+                    text = subject.name,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,

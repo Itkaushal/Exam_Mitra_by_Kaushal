@@ -33,6 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.exammitrabykaushal.ViewModel.LoginViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignInResult
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +55,7 @@ fun LoginScreen(
     val googleAuthClient = remember { GoogleAuthClient(context) }
     val viewModel: LoginViewModel = viewModel()
     val state by viewModel.state.collectAsState()
+    val result : SignInResult?
 
     // 2. Launcher for Google Sign-In Intent
     val launcher = rememberLauncherForActivityResult(
@@ -69,6 +76,11 @@ fun LoginScreen(
     LaunchedEffect(key1 = state.isSignInSuccessful) {
         if (state.isSignInSuccessful) {
             Toast.makeText(context, "Sign in successful", Toast.LENGTH_LONG).show()
+            val user = result.data
+            if (user != null) {
+                SessionManager.saveUserName(context, user.username ?: "")
+                SessionManager.saveUserPhoto(context, user.profilePictureUrl ?: "")
+            }
             SessionManager.setLoggedIn(context, true)
             onLoginSuccess()
             viewModel.resetState()
@@ -293,3 +305,4 @@ fun SocialButton(text: String, icon: ImageVector, modifier: Modifier, onClick: (
         }
     }
 }
+

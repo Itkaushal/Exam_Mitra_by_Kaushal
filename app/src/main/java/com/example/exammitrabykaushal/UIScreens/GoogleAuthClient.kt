@@ -56,6 +56,8 @@ class GoogleAuthClient(private val context: Context) {
                     )
                 },
                 errorMessage = null
+
+
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -74,3 +76,4 @@ data class UserData(
     val username: String?,
     val profilePictureUrl: String?
 )
+

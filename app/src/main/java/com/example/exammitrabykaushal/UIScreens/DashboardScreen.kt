@@ -32,7 +32,11 @@ import androidx.compose.ui.unit.dp
 // ---------------- DASHBOARD SCREEN ----------------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(onNavigateToTest: (String) -> Unit,onNavigateToProfile: () -> Unit) {
+fun DashboardScreen(
+    onNavigateToTest: (String) -> Unit,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToVideoLectures: (String) -> Unit
+    ){
 
     val context = LocalContext.current
     // Get User Name from Session Manager
@@ -66,8 +70,8 @@ fun DashboardScreen(onNavigateToTest: (String) -> Unit,onNavigateToProfile: () -
                         Icon(
                             Icons.Default.AccountCircle,
                             contentDescription = "Profile",
-                            tint = Color.Red.copy(alpha = 0.6f),
-                            modifier = Modifier.size(35.dp))
+                            tint = Color(0xFF1565C0),
+                            modifier = Modifier.size(40.dp))
                     }
                 }
             )
@@ -147,6 +151,29 @@ fun DashboardScreen(onNavigateToTest: (String) -> Unit,onNavigateToProfile: () -
                     }
                 }
             }
+
+            // Free Video Lectures
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable {onNavigateToVideoLectures("VideoLectures")},
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E5F5))
+            ){
+                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painter =
+                        painterResource(id = R.drawable.video_icon),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(60.dp))
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        Text("Free Video Lectures", fontWeight = FontWeight.Bold)
+                        Text("Maths , Reasoning, GK/Gs, English, by best teachers...", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+
         }
     }
 }
