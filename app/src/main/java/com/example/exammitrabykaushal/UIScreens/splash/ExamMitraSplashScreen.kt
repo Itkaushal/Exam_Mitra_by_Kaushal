@@ -1,5 +1,8 @@
 package com.example.exammitrabykaushal.UIScreens.splash
 
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.tween
@@ -15,16 +18,24 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.exammitrabykaushal.UIScreens.session.SessionManager.updateDailyStreak
 import kotlinx.coroutines.delay
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ExamMitraSplashScreen(onFinish: () -> Unit) {
 
     val scale = remember { Animatable(0f) }
     var textAlpha by remember { mutableStateOf(0f) }
+    val context = LocalContext.current
+
+    updateDailyStreak(context)
 
     LaunchedEffect(true) {
         scale.animateTo(
@@ -113,3 +124,4 @@ class OvershootInterpolatorEasing(private val tension: Float) : Easing {
         return t * t * ((tension + 1) * t + tension) + 1f
     }
 }
+

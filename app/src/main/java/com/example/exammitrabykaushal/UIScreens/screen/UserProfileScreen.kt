@@ -1,6 +1,5 @@
 package com.example.exammitrabykaushal.UIScreens.screen
 
-
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -15,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,34 +31,31 @@ import com.example.exammitrabykaushal.UIScreens.session.SessionManager
 @Composable
 fun ProfileScreen(
     onBack: () -> Unit,
-    onLogout: () -> Unit, // New callback for logging out
+    onLogout: () -> Unit,
     onNavigateToHistory: () -> Unit,
     onNavigateToNotification: () -> Unit
 ) {
-    var userName by rememberSaveable { mutableStateOf("") }
-    var userPhoto by rememberSaveable { mutableStateOf("") }
-
     val context = LocalContext.current
+
+    var userName by rememberSaveable { mutableStateOf("Guest User") }
+    var userPhoto by rememberSaveable { mutableStateOf("") }
+    var showEditDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        userName = SessionManager.getUserName(context)
+        userName = SessionManager.getUserName(context).ifBlank { "Guest User" }
         userPhoto = SessionManager.getUserPhoto(context)
+
         Log.d("ProfileScreen", "Loaded name: $userName")
         Log.d("ProfileScreen", "Loaded photo: $userPhoto")
     }
 
-
-    // State for Edit Dialog
-    var showEditDialog by remember { mutableStateOf(false) }
-
-    // If Edit Dialog is open
     if (showEditDialog) {
         EditProfileDialog(
             currentName = userName,
             onDismiss = { showEditDialog = false },
-            onSave = { newName ->
-                // Save to Session and Update UI
-                SessionManager.saveUserName(context, newName)
-                userName = newName
+            onSave = {
+                SessionManager.saveUserName(context, it)
+                userName = it
                 showEditDialog = false
             }
         )
@@ -66,11 +63,11 @@ fun ProfileScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("My Profile") },
+            CenterAlignedTopAppBar(
+                title = { Text("My Profile", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, null)
                     }
                 }
             )
@@ -80,222 +77,204 @@ fun ProfileScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(Color(0xFFF3F6FA))
         ) {
-            // User Profile section--------------------------------
+
+            // 🔷 HEADER
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(Color(0xFF1565C0), Color(0xFF42A5F5))
+                        Brush.verticalGradient(
+                            listOf(Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364))
                         ),
-                        shape = RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp)
+                        RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
                     )
-                    .padding(bottom = 32.dp, top = 16.dp),
+                    .padding(vertical = 32.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // User Profile Image----------------------------
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
                     Surface(
-                        modifier = Modifier.size(100.dp),
+                        modifier = Modifier
+                            .size(110.dp)
+                            .shadow(10.dp, CircleShape),
                         shape = CircleShape,
                         color = Color.White,
-                        border = BorderStroke(3.dp, Color(0xFFFF9800))
+                        border = BorderStroke(3.dp, Color(0xFFFFC107))
                     ) {
                         if (userPhoto.isNotBlank()) {
                             AsyncImage(
                                 model = userPhoto,
-                                contentDescription = "Profile Photo",
+                                contentDescription = null,
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
                             )
                         } else {
                             Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
+                                Icons.Default.Person,
+                                null,
                                 tint = Color.Gray,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(22.dp)
+                                modifier = Modifier.padding(26.dp)
                             )
-                            Log.d("ProfileScreen", "User photo is blank")
                         }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Display User Name-----------------
                     Text(
-                        text = userName,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = Color.White,
+                        userName,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        letterSpacing = 1.sp,
-                        fontFamily = FontFamily.Serif
-
+                        color = Color.White
                     )
+
                     Text(
-                        text = "SSC CGL • Target 2024",
-                        style = MaterialTheme.typography.bodyMedium,
+                        "SSC • Banking • Railway",
+                        fontSize = 13.sp,
                         color = Color.White.copy(alpha = 0.8f)
                     )
                 }
             }
 
-            // --- SECTION 2: STATS ---
-            PaddingValues(horizontal = 16.dp)
+            // 🔷 STATS
             Card(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .offset(y = (-20).dp),
-                elevation = CardDefaults.cardElevation(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                    .offset(y = (-24).dp),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(8.dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    StatItem(Icons.Default.Face, Color(0xFFFFD700), "#1,420", "Rank")
-                    Divider(modifier = Modifier.height(40.dp).width(1.dp))
-                    StatItem(Icons.Default.DateRange, Color(0xFFFF3D00), "12 Days", "Streak")
-                    Divider(modifier = Modifier.height(40.dp).width(1.dp))
-                    StatItem(Icons.Default.Menu, Color(0xFF4CAF50), "85%", "Accuracy")
+                    StatItem(Icons.Default.EmojiEvents, Color(0xFFFFB300), "1,420", "Rank")
+                    StatItem(Icons.Default.LocalFireDepartment, Color(0xFFFF5722), "12 Days", "Streak")
+                    StatItem(Icons.Default.TaskAlt, Color(0xFF4CAF50), "85%", "Accuracy")
                 }
             }
 
-            // --- SECTION 3: MENU OPTIONS ---
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Text(
-                    text = "Account Settings",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
-                )
+            Spacer(modifier = Modifier.height(8.dp))
 
-                // 3. Edit Profile Click Action
-                ProfileOptionCard(
-                    icon = Icons.Default.Edit,
-                    title = "Edit Profile",
-                    onClick = { showEditDialog = true }
-                )
-                // notification click action
-                ProfileOptionCard(icon = Icons.Default.Notifications, title = "Notifications", onClick = {onNavigateToNotification()})
-                // test history click action
-                ProfileOptionCard(icon = Icons.Default.HistoryToggleOff, title = "Test History", onClick = {onNavigateToHistory()})
+            // 🔷 OPTIONS
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+
+                SectionTitle("Account")
+
+                ProfileOptionCard(Icons.Default.Edit, "Edit Profile") {
+                    showEditDialog = true
+                }
+
+                ProfileOptionCard(Icons.Default.Notifications, "Notifications") {
+                    onNavigateToNotification()
+                }
+
+                ProfileOptionCard(Icons.Default.History, "Test History") {
+                    onNavigateToHistory()
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 4. Logout Click Action
+                SectionTitle("Danger Zone")
+
                 ProfileOptionCard(
                     icon = Icons.Default.Logout,
                     title = "Logout",
-                    isDestructive = true,
-                    onClick = {
-                        SessionManager.clearSession(context)
-                        onLogout()
-                    }
-                )
-
+                    isDestructive = true
+                ) {
+                    SessionManager.clearSession(context)
+                    onLogout()
+                }
             }
         }
     }
 }
 
-// --- HELPER COMPONENTS ---
+/* -------------------- COMPONENTS -------------------- */
+
+@Composable
+fun SectionTitle(title: String) {
+    Text(
+        title,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        color = Color.Gray,
+        modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
+    )
+}
 
 @Composable
 fun StatItem(icon: ImageVector, color: Color, value: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(imageVector = icon, contentDescription = null, tint = color, modifier = Modifier.size(28.dp))
+        Icon(icon, null, tint = color, modifier = Modifier.size(28.dp))
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = value, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        Text(text = label, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+        Text(value, fontWeight = FontWeight.Bold)
+        Text(label, fontSize = 12.sp, color = Color.Gray)
     }
 }
 
 @Composable
-fun ProfileOptionCard(icon: ImageVector, title: String, isDestructive: Boolean = false, onClick: () -> Unit) {
+fun ProfileOptionCard(
+    icon: ImageVector,
+    title: String,
+    isDestructive: Boolean = false,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onClick() }, // Added Clickable
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = if (isDestructive) Color.Red else Color(0xFF1565C0)
+                icon,
+                null,
+                tint = if (isDestructive) Color.Red else Color(0xFF1E88E5)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(Modifier.width(16.dp))
             Text(
-                text = title,
-                fontSize = 16.sp,
+                title,
+                modifier = Modifier.weight(1f),
                 fontWeight = FontWeight.Medium,
-                color = if (isDestructive) Color.Red else Color.Black,
-                modifier = Modifier.weight(1f)
+                color = if (isDestructive) Color.Red else Color.Black
             )
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
-                contentDescription = null,
-                tint = Color.LightGray
-            )
+            Icon(Icons.Default.ChevronRight, null, tint = Color.Gray)
         }
     }
 }
 
-// --- NEW EDIT DIALOG ---
+/* -------------------- EDIT DIALOG -------------------- */
+
 @Composable
-fun EditProfileDialog(currentName: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
+fun EditProfileDialog(
+    currentName: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
     var text by remember { mutableStateOf(currentName) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = AlertDialogDefaults.shape,
-        icon = { Icons.Default.Edit},
-        title = { Text("Edit Profile", fontWeight = FontWeight.W700, fontFamily = FontFamily.Serif) },
+        title = { Text("Edit Profile", fontWeight = FontWeight.Bold) },
         text = {
-            Column {
-                Text("Update your display name:", color = Color.Blue)
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedTextColor = Color.Blue.copy(alpha = 0.5f),
-                        unfocusedIndicatorColor = Color.Blue.copy(alpha = 0.5f),
-                        focusedTextColor = Color.Blue,
-                        focusedIndicatorColor = Color.Blue,
-                        focusedPlaceholderColor = Color.Blue,
-                        unfocusedPlaceholderColor = Color.Blue.copy(0.5f)
-                    )
-                )
-            }
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                singleLine = true,
+                label = { Text("Display Name") }
+            )
         },
         confirmButton = {
-            Button(
-                onClick = { onSave(text) },
-                shape = RoundedCornerShape(100.dp),
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.Black,
-                    containerColor = Color.Cyan.copy(alpha = 0.4f)
-                ),
-                border = BorderStroke(1.dp, color = Color.Black)
-
-                ) {
+            Button(onClick = { onSave(text) }) {
                 Text("Save")
             }
         },
