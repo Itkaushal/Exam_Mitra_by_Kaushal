@@ -1,12 +1,14 @@
 package com.example.exammitrabykaushal.UIScreens.screen
 
 import android.R
+import android.graphics.fonts.FontFamily
 import android.widget.Toast
 import androidx.activity.compose.ReportDrawn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -16,8 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -82,7 +87,12 @@ fun QuizScreen(
     /* ---------------- LOADING STATE ---------------- */
     if (questions.isEmpty()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                color = Color.Blue,
+                strokeCap = StrokeCap.Square,
+                trackColor = Color.LightGray,
+                modifier = Modifier.size(48.dp)
+            )
         }
         LaunchedEffect(Unit) {
             Toast.makeText(context, "Loading Questions...", Toast.LENGTH_SHORT).show()
@@ -199,77 +209,74 @@ fun QuizScreen(
                 Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 // -----Previous Button-----------
                 OutlinedButton(
                     onClick = { viewModel.previousQuestion() },
-                    enabled = safeIndex > 0
-                ) { Text("Prev") }
-
-                // -----Submit Button---------
-                OutlinedButton(
-                    onClick = { showSubmitDialog = true },
-                    enabled = safeIndex == questions.lastIndex,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
-                        contentColor = Color.White
-                    ),
+                    enabled = safeIndex > 0,
                     border = BorderStroke(width = 1.dp, color = Color.Gray),
-                ) {
-                    Text("Submit Test")
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) { Text("Prev",
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                        textAlign = TextAlign.Center,
+                        letterSpacing = 1.sp))
                 }
 
-                if(showSubmitDialog){
-                    AlertDialog(
-                        onDismissRequest = {showSubmitDialog = false},
-                        title = {Text("Submit Test")},
-                        text = {
-                            Text("Are you sure you want to submit the test before completion?")
-                        },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    showSubmitDialog = false
-                                    viewModel.submitQuiz()
-                                }
-                            ) {
-                                Text("Yes, Submit")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = { showSubmitDialog = false }
-                            ) {
-                                Text("Cancel")
-                            }
-                        }
+                Spacer(Modifier.width(8.dp))
+                // Pause Resume Button
+                OutlinedButton(onClick = { timerRunning = !timerRunning },
+                    border = BorderStroke(width = 1.dp, color = Color.Red),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red.copy(alpha = 0.02f),
+                    ),
+                ) {
+                    Icon(
+                        if (timerRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
+                        null,
+                        tint = Color.Black
+                    )
+                    Spacer(Modifier.width(5.dp))
+                    Text(if (timerRunning) "Pause" else "Resume",
+                        style = TextStyle(
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                            textAlign = TextAlign.Center,
+                            letterSpacing = 1.sp
+                        )
                     )
                 }
 
-
-                Row {
-                    // -----
-                    OutlinedButton(onClick = { timerRunning = !timerRunning }) {
-                        Icon(
-                            if (timerRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            null
-                        )
-                        Spacer(Modifier.width(6.dp))
-                        Text(if (timerRunning) "Pause" else "Resume")
+                Spacer(Modifier.width(8.dp))
+                // Next or Submit Button
+                OutlinedButton(onClick = {
+                    if (safeIndex == questions.lastIndex)
+                        viewModel.finishQuiz()
+                    else
+                        viewModel.nextQuestion() },
+                    border = BorderStroke(width = 1.dp, color = Color.Blue),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(if (safeIndex == questions.lastIndex) "Submit" else "Next",
+                        style = TextStyle(
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                            textAlign = TextAlign.Center,
+                            letterSpacing = 1.sp
+                        ))
                     }
 
-                    Spacer(Modifier.width(8.dp))
-
-                    Button(onClick = {
-                        if (safeIndex == questions.lastIndex)
-                            viewModel.finishQuiz()
-                        else
-                            viewModel.nextQuestion()
-                    }) {
-                        Text(if (safeIndex == questions.lastIndex) "Submit" else "Next")
-                    }
-                }
             }
         }
     ) { padding ->

@@ -42,7 +42,9 @@ import com.example.exammitrabykaushal.UIScreens.screen.QuizScreen
 import com.example.exammitrabykaushal.UIScreens.screen.TestHistoryScreen
 import com.example.exammitrabykaushal.UIScreens.session.SessionManager
 import com.example.exammitrabykaushal.UIScreens.splash.ExamMitraSplashScreen
+import com.example.exammitrabykaushal.navigation.Routes
 import com.google.android.gms.ads.MobileAds
+import okhttp3.Route
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -127,7 +129,7 @@ class MainActivity : ComponentActivity() {
                         DashboardScreen(
                             onNavigateToTest = { testType ->
                                 when (testType) {
-                                    "pyq" -> navController.navigate("pyq_selection")
+                                    "pyq" -> navController.navigate(Routes.PYQ_SELECTION)
                                     "math" -> navController.navigate("quiz/math")
                                     "reasoning" -> navController.navigate("quiz/reasoning")
                                     "gs" -> navController.navigate("quiz/gs")
@@ -169,28 +171,31 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // PyQ Selection route
-                    composable("pyq_selection") {
+                    composable(Routes.PYQ_SELECTION) {
                         PYQSelectionScreen(
                             onExamSelected = { examName ->
                                 val route = when (examName) {
-                                    "UPSC CSE" -> "UPSC"
-                                    "SSC CGL" -> "CGL"
-                                    "SSC CHSL/MTS" -> "MTS"
-                                    "SSC JE" -> "JE"
-                                    "RRB NTPC" -> "NTPC"
-                                    "RRB Group D" -> "GROUP-D"
-                                    "State PSC" -> "StateExam"
-                                    "Banking/IBPS" -> "BANK"
-                                    else -> "quiz/$examName"
+                                    "UPSC CSE" -> Routes.UPSC
+                                    "SSC CGL" -> Routes.CGL
+                                    "SSC CHSL/MTS" -> Routes.MTS
+                                    "SSC JE" -> Routes.JE
+                                    "RRB NTPC" -> Routes.NTPC
+                                    "RRB Group D" -> Routes.GROUP_D
+                                    "State PSC" -> Routes.STATE
+                                    "Banking/IBPS" -> Routes.BANK
+                                    else -> null
                                 }
-                                navController.navigate(route)
+                                route?.let {
+                                    navController.navigate(it)
+                                }
+
                             },
                             onBack = { navController.popBackStack() }
                         )
                     }
 
                     // upsc paper
-                    composable("UPSC") {
+                    composable(Routes.UPSC) {
                         UpscPyqScreen(
                         examName = "UPSC",
                         /*onPaperClicked = {},*/
@@ -199,7 +204,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // ssc cgl paper
-                    composable("CGL") {
+                    composable(Routes.CGL) {
                         SscCglPyqScreen(
                             examName = "CGL",
                             /*onPaperClicked = {},*/
@@ -208,7 +213,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     //ssc mts paper
-                    composable("MTS") {
+                    composable(Routes.MTS) {
                         MtsChslPyqScreen(
                             examName = "MTS",
                             /*onPaperClicked = {},*/
@@ -217,7 +222,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // rrb ntpc paper
-                    composable("NTPC") {
+                    composable(Routes.NTPC) {
                         NtpcPyqScreen(
                             examName = "NTPC",
                             /*onPaperClicked = { paperKey ->
@@ -228,7 +233,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // rrb group -d paper
-                    composable("GROUP-D") {
+                    composable(Routes.GROUP_D) {
                         GroupDPyqScreen(
                             examName = "GROUP-D",
                            /* onPaperClicked = {},*/
@@ -237,7 +242,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // ibps bank paper
-                    composable("BANK") {
+                    composable(Routes.BANK) {
                         BankPyqScreen(
                             examName = "BANK",
                             /*onPaperClicked = {},*/
@@ -246,7 +251,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // state exam paper
-                    composable("StateExam") {
+                    composable(Routes.STATE) {
                         StateExamPyqScreen(
                             examName = "StateExam",
                             /*onPaperClicked = {},*/
@@ -255,7 +260,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // ssc je exam paper
-                    composable("JE") {
+                    composable(Routes.JE) {
                         JePyqScreen(
                             examName = "JE",
                            /* onPaperClicked = {},*/

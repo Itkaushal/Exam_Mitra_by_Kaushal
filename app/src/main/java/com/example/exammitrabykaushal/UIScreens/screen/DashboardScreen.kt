@@ -136,7 +136,7 @@ fun DashboardScreen(
 
             // PYQ Section
             Card(
-                modifier = Modifier.fillMaxWidth().clickable { onNavigateToTest("PYQ") },
+                modifier = Modifier.fillMaxWidth().clickable { onNavigateToTest("pyq") },
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1))
             ) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -146,7 +146,6 @@ fun DashboardScreen(
                         modifier = Modifier.size(60.dp))
 
                     Spacer(modifier = Modifier.width(16.dp))
-
                     Column {
                         Text("Previous Year Papers", fontWeight = FontWeight.Bold)
                         Text("SSC , Railway, Police, Banking, State exams...", style = MaterialTheme.typography.bodySmall)

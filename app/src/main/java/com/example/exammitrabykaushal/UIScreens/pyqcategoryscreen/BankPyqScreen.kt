@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -185,7 +186,12 @@ fun ViewPdfScreenBank(pdfUrl: String, onBack: () -> Unit) {
 
             if (isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(48.dp),
+                    color = Color.Blue,
+                    strokeCap = StrokeCap.Square,
+                    trackColor = Color.LightGray,
                 )
             }
         }
@@ -263,6 +269,5 @@ fun getDummyBankPapers(category: String): List<BankTestPaper> {
         BankTestPaper("bank_pyq_3", "Bank IBPS Shift 1", "06-Dec 2024", 100, "120 Min"),
         BankTestPaper("bank_pyq_4", "Bank IBPS Shift 1", "14-Dec 2024", 100, "120 Min"),
         BankTestPaper("bank_pyq_5", "Bank IBPS Shift 1", "02-Dec 2024", 100, "120 Min"),
-
-        )
+    )
 }
