@@ -1,4 +1,4 @@
-package com.example.exammitrabykaushal.UIScreens
+package com.example.exammitrabykaushal.UIScreens.screen
 
 import com.example.exammitrabykaushal.R
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.exammitrabykaushal.UIScreens.session.SessionManager
+import com.example.exammitrabykaushal.UIScreens.component.ExamMitraLogo
 
 
 // ---------------- DASHBOARD SCREEN ----------------
@@ -115,19 +117,19 @@ fun DashboardScreen(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 FeatureCard("Mock Test",
                     icon = painterResource(id = R.drawable.mock_test),
-                    Color(0xFFE3F2FD)) { onNavigateToTest("Mock") }
+                    Color(0xFFE3F2FD)) { onNavigateToTest("full_length") }
                 FeatureCard("Math Test",
                     icon = painterResource(id = R.drawable.math_test),
-                    Color(0xFFE8F5E9)) { onNavigateToTest("Math") }
+                    Color(0xFFE8F5E9)) { onNavigateToTest("math") }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 FeatureCard("Reasoning",
                     icon = painterResource(id = R.drawable.reasoning_test),
-                    Color(0xFFFFF3E0)) { onNavigateToTest("Reasoning") }
+                    Color(0xFFFFF3E0)) { onNavigateToTest("reasoning") }
                 FeatureCard("General Studies",
                     icon = painterResource(id = R.drawable.gkgs_test),
-                    Color(0xFFF3E5F5)) { onNavigateToTest("GS") }
+                    Color(0xFFF3E5F5)) { onNavigateToTest("gs") }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

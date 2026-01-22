@@ -1,9 +1,9 @@
-package com.example.exammitrabykaushal.UIScreens
-
+package com.example.exammitrabykaushal.UIScreens.auth
 
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.util.Log
 import com.example.exammitrabykaushal.R
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -14,32 +14,34 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.tasks.await
 
 class GoogleAuthClient(private val context: Context) {
+
     private val auth = Firebase.auth
     private val oneTapClient: SignInClient = Identity.getSignInClient(context)
 
-    // 1. Sign In (Launch the Google Sheet)
     suspend fun signIn(): IntentSender? {
-        val result = try {
-            oneTapClient.beginSignIn(
+        return try {
+            val result = oneTapClient.beginSignIn(
                 BeginSignInRequest.builder()
                     .setGoogleIdTokenRequestOptions(
                         BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                             .setSupported(true)
                             .setFilterByAuthorizedAccounts(false)
-                            .setServerClientId(context.getString(R.string.default_web_client_id)) // Gets ID from google-services.json
+                            .setServerClientId(
+                                context.getString(R.string.default_web_client_id)
+                            )
                             .build()
                     )
                     .setAutoSelectEnabled(true)
                     .build()
             ).await()
+
+            result.pendingIntent.intentSender
         } catch (e: Exception) {
-            e.printStackTrace()
-            return null
+            Log.e("GoogleAuthClient", "Google Sign-In failed", e)
+            null
         }
-        return result.pendingIntent.intentSender
     }
 
-    // 2. Handle the Result & Auth with Firebase
     suspend fun signInWithIntent(intent: Intent): SignInResult {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
@@ -47,6 +49,10 @@ class GoogleAuthClient(private val context: Context) {
 
         return try {
             val user = auth.signInWithCredential(googleCredentials).await().user
+
+            Log.d("GoogleAuthClient", "Firebase user: ${user?.displayName}")
+            Log.d("GoogleAuthClient", "Photo: ${user?.photoUrl}")
+
             SignInResult(
                 data = user?.run {
                     UserData(
@@ -56,12 +62,9 @@ class GoogleAuthClient(private val context: Context) {
                     )
                 },
                 errorMessage = null
-
-
             )
         } catch (e: Exception) {
-            e.printStackTrace()
-            SignInResult(data = null, errorMessage = e.message)
+            SignInResult(null, e.message)
         }
     }
 }
@@ -76,4 +79,3 @@ data class UserData(
     val username: String?,
     val profilePictureUrl: String?
 )
-

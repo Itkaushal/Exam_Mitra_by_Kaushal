@@ -1,29 +1,30 @@
 package com.example.exammitrabykaushal.ViewModel
 
-
 import androidx.lifecycle.ViewModel
-import com.example.exammitrabykaushal.UIScreens.SignInResult
+import com.example.exammitrabykaushal.UIScreens.auth.SignInResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 class LoginViewModel : ViewModel() {
+
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
 
     fun onSignInResult(result: SignInResult) {
-        _state.update { it.copy(
+        _state.value = SignInState(
             isSignInSuccessful = result.data != null,
+            signInResult = result,
             signInError = result.errorMessage
-        ) }
+        )
     }
 
     fun resetState() {
-        _state.update { SignInState() }
+        _state.value = SignInState()
     }
 }
 
 data class SignInState(
     val isSignInSuccessful: Boolean = false,
+    val signInResult: SignInResult? = null,
     val signInError: String? = null
 )

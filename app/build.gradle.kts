@@ -52,6 +52,7 @@ dependencies {
     implementation (libs.androidx.lifecycle.runtime.compose)
     // Room
     implementation (libs.androidx.room.runtime)
+    implementation(libs.androidx.tv.material)
     annotationProcessor (libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     // Navigation
@@ -76,7 +77,7 @@ dependencies {
     // For example, declare the dependencies for Firebase Authentication and Cloud Firestore
     implementation (libs.firebase.firestore)
     // Admob
-    implementation("com.google.android.gms:play-services-ads:24.9.0")
+    implementation(libs.play.services.ads)
     // Retrofit + Moshi
     implementation (libs.retrofit)
     implementation (libs.converter.moshi)

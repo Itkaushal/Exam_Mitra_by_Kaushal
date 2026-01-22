@@ -1,4 +1,4 @@
-package com.example.exammitrabykaushal.UIScreens
+package com.example.exammitrabykaushal.UIScreens.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.exammitrabykaushal.UIScreens.session.SessionManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

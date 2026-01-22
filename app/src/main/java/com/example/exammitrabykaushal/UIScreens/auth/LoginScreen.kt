@@ -1,10 +1,12 @@
-package com.example.exammitrabykaushal.UIScreens
+package com.example.exammitrabykaushal.UIScreens.auth
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -32,13 +34,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.exammitrabykaushal.UIScreens.session.SessionManager
 import com.example.exammitrabykaushal.ViewModel.LoginViewModel
-import com.google.android.gms.auth.api.signin.GoogleSignInResult
-import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +52,6 @@ fun LoginScreen(
     val googleAuthClient = remember { GoogleAuthClient(context) }
     val viewModel: LoginViewModel = viewModel()
     val state by viewModel.state.collectAsState()
-    val result : SignInResult?
 
     // 2. Launcher for Google Sign-In Intent
     val launcher = rememberLauncherForActivityResult(
@@ -73,19 +69,33 @@ fun LoginScreen(
     }
 
     // 3. Handle Success/Failure
-    LaunchedEffect(key1 = state.isSignInSuccessful) {
-        if (state.isSignInSuccessful) {
-            Toast.makeText(context, "Sign in successful", Toast.LENGTH_LONG).show()
-            val user = result.data
-            if (user != null) {
-                SessionManager.saveUserName(context, user.username ?: "")
-                SessionManager.saveUserPhoto(context, user.profilePictureUrl ?: "")
-            }
+    LaunchedEffect(state) {
+
+        val user = state.signInResult?.data
+
+        if (state.isSignInSuccessful && user != null) {
+
+            SessionManager.saveUserName(
+                context,
+                user.username ?: "Google User"
+            )
+
+            SessionManager.saveUserPhoto(
+                context,
+                user.profilePictureUrl ?: ""
+            )
+
             SessionManager.setLoggedIn(context, true)
+
             onLoginSuccess()
+
             viewModel.resetState()
         }
     }
+
+
+
+
 
     LaunchedEffect(key1 = state.signInError) {
         state.signInError?.let { error ->
@@ -203,10 +213,27 @@ fun LoginScreen(
         Button(
             onClick = {
                 if (email.isNotEmpty() && password.isNotEmpty()) {
+
+                    SessionManager.saveUserName(
+                        context,
+                        email.substringBefore("@")
+                    )
+
+                    SessionManager.saveUserPhoto(
+                        context,
+                        ""
+                    )
+
                     SessionManager.setLoggedIn(context, true)
+
                     onLoginSuccess()
-                } else {
-                    Toast.makeText(context, "Please enter email & password", Toast.LENGTH_SHORT).show()
+
+                }else {
+                    Toast.makeText(
+                        context,
+                        "Please enter email & password",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             },
             modifier = Modifier
@@ -291,7 +318,7 @@ fun SocialButton(text: String, icon: ImageVector, modifier: Modifier, onClick: (
         modifier = modifier.height(50.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray)
+        border = BorderStroke(1.dp, Color.LightGray)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(

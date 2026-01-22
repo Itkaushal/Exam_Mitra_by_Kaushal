@@ -1,4 +1,4 @@
-package com.example.exammitrabykaushal.UIScreens
+package com.example.exammitrabykaushal.UIScreens.component
 
 import com.example.exammitrabykaushal.R
 import androidx.compose.foundation.background

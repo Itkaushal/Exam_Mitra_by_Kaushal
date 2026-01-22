@@ -1,4 +1,4 @@
-package com.example.exammitrabykaushal.UIScreens
+package com.example.exammitrabykaushal.UIScreens.screen
 
 import com.example.exammitrabykaushal.R
 import androidx.compose.foundation.background
@@ -15,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -27,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // Data class to hold Exam Details
-data class SubjectCategory(
+data class ExamCategory(
     val name: String,
     val icon: Painter,
     val colorStart: Color,
@@ -36,29 +35,29 @@ data class SubjectCategory(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FreeVideoLecturesScreen(
-    onSubjectSelected: (String) -> Unit,
+fun PYQSelectionScreen(
+    onExamSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
     // Theme Colors
     val BluePrimary = Color(0xFF1565C0)
 
     // List of Exams
-    val subjectList = listOf(
-        SubjectCategory("Maths", painterResource(id = R.drawable.mathvideo), Color(0xFF5C6BC0), Color(0xFF3949AB)),
-        SubjectCategory("Reasoning", painterResource(id = R.drawable.reasoningvideo), Color(0xFF66BB6A), Color(0xFF43A047)),
-        SubjectCategory("GK/GS", painterResource(id = R.drawable.gkgsvideo), Color(0xFFFFA726), Color(0xFFFB8C00)),
-        SubjectCategory("English", painterResource(id = R.drawable.english), Color(0xFFEC407A), Color(0xFFD81B60)),
-        SubjectCategory("Hindi", painterResource(id = R.drawable.hindivideo), Color(0xFF29B6F6), Color(0xFF039BE5)),
-        SubjectCategory("Science", painterResource(id = R.drawable.sciencevideo), Color(0xFF7E57C2), Color(0xFF5E35B1)),
-        SubjectCategory("Computer", painterResource(id = R.drawable.computervideo), Color(0xFFFF7043), Color(0xFFF4511E)),
-        SubjectCategory("Current Affairs", painterResource(id = R.drawable.cavideo), Color(0xFF26A69A), Color(0xFF00897B))
+    val examList = listOf(
+        ExamCategory("UPSC CSE", painterResource(id = R.drawable.statevideo), Color(0xFF5C6BC0), Color(0xFF3949AB)),
+        ExamCategory("SSC CGL", painterResource(id = R.drawable.upscvideo), Color(0xFF66BB6A), Color(0xFF43A047)),
+        ExamCategory("SSC CHSL/MTS", painterResource(id = R.drawable.sscvideo), Color(0xFFFFA726), Color(0xFFFB8C00)),
+        ExamCategory("SSC JE", painterResource(id = R.drawable.sscvideo), Color(0xFFEC407A), Color(0xFFD81B60)),
+        ExamCategory("RRB NTPC", painterResource(id = R.drawable.trainvideo), Color(0xFF29B6F6), Color(0xFF039BE5)),
+        ExamCategory("RRB Group D", painterResource(id = R.drawable.trainvideo), Color(0xFF7E57C2), Color(0xFF5E35B1)),
+        ExamCategory("State PSC", painterResource(id = R.drawable.statevideo), Color(0xFFFF7043), Color(0xFFF4511E)),
+        ExamCategory("Banking/IBPS", painterResource(id = R.drawable.bankinvideo), Color(0xFF26A69A), Color(0xFF00897B))
     )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Select Subject Category", fontWeight = FontWeight.SemiBold) },
+                title = { Text("Select Exam Category", fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -81,13 +80,13 @@ fun FreeVideoLecturesScreen(
         ) {
             // Header Section
             Text(
-                "Free Video Lectures",
+                "Previous Year Papers",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                "Learn Each Subject to Watch Videos.",
+                "Practice with actual questions from past exams.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 4.dp)
@@ -102,8 +101,8 @@ fun FreeVideoLecturesScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                items(subjectList) { subject ->
-                    SubjectCard(subject = subject, onClick = { onSubjectSelected(subject.name) })
+                items(examList) { exam ->
+                    ExamCard(exam = exam, onClick = { onExamSelected(exam.name) })
                 }
             }
         }
@@ -111,7 +110,7 @@ fun FreeVideoLecturesScreen(
 }
 
 @Composable
-fun SubjectCard(subject: SubjectCategory, onClick: () -> Unit) {
+fun ExamCard(exam: ExamCategory, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,7 +125,7 @@ fun SubjectCard(subject: SubjectCategory, onClick: () -> Unit) {
                 .fillMaxSize()
                 .background(
                     brush = Brush.verticalGradient(
-                        colors = listOf(subject.colorStart, subject.colorEnd)
+                        colors = listOf(exam.colorStart, exam.colorEnd)
                     )
                 )
         ) {
@@ -147,7 +146,7 @@ fun SubjectCard(subject: SubjectCategory, onClick: () -> Unit) {
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            painter = subject.icon,
+                            painter = exam.icon,
                             contentDescription = null,
                             tint = Color.Unspecified, // Shows original logo colors
                             modifier = Modifier.size(30.dp)
@@ -159,7 +158,7 @@ fun SubjectCard(subject: SubjectCategory, onClick: () -> Unit) {
 
                 // Text
                 Text(
-                    text = subject.name,
+                    text = exam.name,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,

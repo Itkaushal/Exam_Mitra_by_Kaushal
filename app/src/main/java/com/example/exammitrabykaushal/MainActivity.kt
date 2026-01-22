@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,6 +22,9 @@ import com.example.exammitrabykaushal.UIScreens.FreeVideoCateScreen.HindiPlaylis
 import com.example.exammitrabykaushal.UIScreens.FreeVideoCateScreen.MathPlaylistScreen
 import com.example.exammitrabykaushal.UIScreens.FreeVideoCateScreen.ReasoningPlaylistScreen
 import com.example.exammitrabykaushal.UIScreens.FreeVideoCateScreen.SciencePlaylistScreen
+import com.example.exammitrabykaushal.UIScreens.auth.LoginScreen
+import com.example.exammitrabykaushal.UIScreens.auth.PhoneAuthScreen
+import com.example.exammitrabykaushal.UIScreens.auth.SignUpScreen
 import com.example.exammitrabykaushal.UIScreens.pyqcategoryscreen.BankPyqScreen
 import com.example.exammitrabykaushal.UIScreens.pyqcategoryscreen.GroupDPyqScreen
 import com.example.exammitrabykaushal.UIScreens.pyqcategoryscreen.JePyqScreen
@@ -31,7 +33,15 @@ import com.example.exammitrabykaushal.UIScreens.pyqcategoryscreen.NtpcPyqScreen
 import com.example.exammitrabykaushal.UIScreens.pyqcategoryscreen.SscCglPyqScreen
 import com.example.exammitrabykaushal.UIScreens.pyqcategoryscreen.StateExamPyqScreen
 import com.example.exammitrabykaushal.UIScreens.pyqcategoryscreen.UpscPyqScreen
-import com.example.exammitrabykaushal.UIScreens.pyqcategoryscreen.loadPdfFromFirebase
+import com.example.exammitrabykaushal.UIScreens.screen.DashboardScreen
+import com.example.exammitrabykaushal.UIScreens.screen.FreeVideoLecturesScreen
+import com.example.exammitrabykaushal.UIScreens.screen.NotificationScreen
+import com.example.exammitrabykaushal.UIScreens.screen.PYQSelectionScreen
+import com.example.exammitrabykaushal.UIScreens.screen.ProfileScreen
+import com.example.exammitrabykaushal.UIScreens.screen.QuizScreen
+import com.example.exammitrabykaushal.UIScreens.screen.TestHistoryScreen
+import com.example.exammitrabykaushal.UIScreens.session.SessionManager
+import com.example.exammitrabykaushal.UIScreens.splash.ExamMitraSplashScreen
 import com.google.android.gms.ads.MobileAds
 
 class MainActivity : ComponentActivity() {
@@ -43,16 +53,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ExamMitraByKaushalTheme {
-
                 val navController = rememberNavController()
                 val context = LocalContext.current
-
                 // Check Login Status
                 val isUserLoggedIn = SessionManager.isLoggedIn(context)
-                val startScreen = if (isUserLoggedIn) "dashboard" else "login"
 
                 NavHost(navController = navController, startDestination = "splash") {
-
                     // --- Splash Screen Route ---
                     composable("splash") {
                         ExamMitraSplashScreen {
@@ -68,7 +74,6 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-
                     // Phone Auth Root
                     composable("phone_login") {
                         PhoneAuthScreen(
@@ -81,7 +86,6 @@ class MainActivity : ComponentActivity() {
                             onBack = { navController.popBackStack() }
                         )
                     }
-
                     // --- Test History Screen ---
                     composable("test_history") {
                         TestHistoryScreen(onBack = { navController.popBackStack() })
@@ -91,14 +95,11 @@ class MainActivity : ComponentActivity() {
                     composable("notification_screen") {
                         NotificationScreen(onBack = { navController.popBackStack() })
                     }
-
                     // --- SIGN UP ROUTE ---
                     composable("signup") {
                         SignUpScreen(
                             onSignUpSuccess = {
-                                // FIX: Navigate to LOGIN screen, NOT Dashboard
                                 navController.navigate("login") {
-                                    // Remove signup from backstack so they don't go back to it
                                     popUpTo("signup") { inclusive = true }
                                 }
                             },
@@ -112,12 +113,11 @@ class MainActivity : ComponentActivity() {
                     composable("login") {
                         LoginScreen(
                             onLoginSuccess = {
-                                // Only go to Dashboard after REAL login
                                 navController.navigate("dashboard") {
                                     popUpTo("login") { inclusive = true }
                                 }
                             },
-                            onNavigateToSignUp = { navController.navigate("signup") } ,
+                            onNavigateToSignUp = { navController.navigate("signup") },
                             onNavigateToPhone = { navController.navigate("phone_login") }
                         )
                     }
@@ -125,30 +125,32 @@ class MainActivity : ComponentActivity() {
                     // --- DASHBOARD ROUTE ---
                     composable("dashboard") {
                         DashboardScreen(
-                            onNavigateToTest = { category ->
-                                if (category == "PYQ") {
-                                    navController.navigate("pyq_selection")
-                                } else {
-                                    navController.navigate("quiz/$category")
+                            onNavigateToTest = { testType ->
+                                when (testType) {
+                                    "pyq" -> navController.navigate("pyq_selection")
+                                    "math" -> navController.navigate("quiz/math")
+                                    "reasoning" -> navController.navigate("quiz/reasoning")
+                                    "gs" -> navController.navigate("quiz/gs")
+                                    "full_length" -> navController.navigate("quiz/full_length")
                                 }
                             },
-                            onNavigateToProfile = { navController.navigate("profile") },
 
+                            onNavigateToProfile = { navController.navigate("profile") },
                             onNavigateToVideoLectures = {
                                 navController.navigate("VideoLectures")
                             }
                         )
                     }
 
-                    // ... Other routes (Quiz, Profile, PYQ) remain the same ...
+                    //Quiz.
                     composable(
                         route = "quiz/{category}",
                         arguments = listOf(navArgument("category") { type = NavType.StringType })
                     ) { backStackEntry ->
-                        val category = backStackEntry.arguments?.getString("category") ?: "Mock"
+                        val category = backStackEntry.arguments?.getString("category") ?: "rrb_je_2024"
                         QuizScreen(
                             category = category,
-                            onBack = { navController.popBackStack() }
+                            onBack = { navController.popBackStack() },
                         )
                     }
 
@@ -162,7 +164,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             onNavigateToHistory = { navController.navigate("test_history") },
-                            onNavigateToNotification = {navController.navigate("notification_screen")}
+                            onNavigateToNotification = { navController.navigate("notification_screen") }
                         )
                     }
 
@@ -187,7 +189,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    // exam name route screen
                     // upsc paper
                     composable("UPSC") {
                         UpscPyqScreen(
@@ -364,7 +365,6 @@ class MainActivity : ComponentActivity() {
                             onBack = {navController.popBackStack()}
                         )
                     }
-
 
                 }
             }

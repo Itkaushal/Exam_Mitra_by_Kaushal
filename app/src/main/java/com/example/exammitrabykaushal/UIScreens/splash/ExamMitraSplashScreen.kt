@@ -1,4 +1,4 @@
-package com.example.exammitrabykaushal.UIScreens
+package com.example.exammitrabykaushal.UIScreens.splash
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Easing

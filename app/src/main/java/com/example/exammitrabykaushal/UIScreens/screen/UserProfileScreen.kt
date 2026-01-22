@@ -1,6 +1,7 @@
-package com.example.exammitrabykaushal.UIScreens
+package com.example.exammitrabykaushal.UIScreens.screen
 
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,20 +11,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.exammitrabykaushal.UIScreens.session.SessionManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,9 +35,17 @@ fun ProfileScreen(
     onNavigateToHistory: () -> Unit,
     onNavigateToNotification: () -> Unit
 ) {
+    var userName by rememberSaveable { mutableStateOf("") }
+    var userPhoto by rememberSaveable { mutableStateOf("") }
+
     val context = LocalContext.current
-    var userName by remember { mutableStateOf(SessionManager.getUserName(context)) }
-    val userPhoto = SessionManager.getUserPhoto(context)
+    LaunchedEffect(Unit) {
+        userName = SessionManager.getUserName(context)
+        userPhoto = SessionManager.getUserPhoto(context)
+        Log.d("ProfileScreen", "Loaded name: $userName")
+        Log.d("ProfileScreen", "Loaded photo: $userPhoto")
+    }
+
 
     // State for Edit Dialog
     var showEditDialog by remember { mutableStateOf(false) }
@@ -91,21 +101,25 @@ fun ProfileScreen(
                         modifier = Modifier.size(100.dp),
                         shape = CircleShape,
                         color = Color.White,
-                        border = androidx.compose.foundation.BorderStroke(3.dp, Color(0xFFFF9800))
+                        border = BorderStroke(3.dp, Color(0xFFFF9800))
                     ) {
-                        if (userPhoto != null) {
+                        if (userPhoto.isNotBlank()) {
                             AsyncImage(
                                 model = userPhoto,
-                                contentDescription = "Profile Image",
-                                modifier = Modifier.fillMaxSize()
+                                contentDescription = "Profile Photo",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
                             )
-                        } else{
+                        } else {
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = null,
                                 tint = Color.Gray,
-                                modifier = Modifier.padding(16.dp)
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(22.dp)
                             )
+                            Log.d("ProfileScreen", "User photo is blank")
                         }
                     }
 
@@ -182,12 +196,11 @@ fun ProfileScreen(
                     title = "Logout",
                     isDestructive = true,
                     onClick = {
-                        // Clear Session
-                        SessionManager.setLoggedIn(context, false)
-                        // Navigate to Login
+                        SessionManager.clearSession(context)
                         onLogout()
                     }
                 )
+
             }
         }
     }
