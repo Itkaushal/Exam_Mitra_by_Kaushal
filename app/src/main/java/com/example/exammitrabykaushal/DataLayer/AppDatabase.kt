@@ -7,41 +7,48 @@ import kotlinx.coroutines.flow.Flow
 // 1. Entity (The Table)
 @Entity(tableName = "test_history")
 data class TestResult(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val testName: String,     // e.g., "Math Mock", "SSC CGL PYQ"
-    val score: Int,           // e.g., 15
-    val totalQuestions: Int,  // e.g., 20
-    val date: Long = System.currentTimeMillis() // Timestamp
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val testName: String,
+    val score: Int,
+    val totalQuestions: Int,
+    val date: Long = System.currentTimeMillis(),
+    val correctCount: Int,
+    val wrongCount: Int,
+    val timeTakenSeconds: Int
 )
 
 // 2. DAO (The Access Methods)
 @Dao
 interface HistoryDao {
     @Query("SELECT * FROM test_history ORDER BY date DESC")
-    fun getAllHistory(): Flow<List<TestResult>> // Returns a live stream of data
+    fun getAllHistory(): Flow<List<TestResult>>
 
-    @Insert
+    @Query("""SELECT * FROM test_history WHERE testName = :testName ORDER BY score DESC LIMIT 1 """)
+    fun getBestScore(testName: String) : Flow<TestResult?>
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertResult(result: TestResult)
 }
 
 // 3. Database (The Connection)
-@Database(entities = [TestResult::class], version = 1)
+@Database(entities = [TestResult::class], version = 2, exportSchema = false)
+
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun historyDao(): HistoryDao
+
+    abstract fun testHistoryDao(): HistoryDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
+        @Volatile private var INSTANCE: AppDatabase? = null
 
-        fun getDatabase(context: Context): AppDatabase {
+        fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
+                Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "exam_mitra_db"
-                ).build()
-                INSTANCE = instance
-                instance
+                    "test_history_db"
+                ).build().also { INSTANCE = it }
             }
         }
     }

@@ -175,6 +175,29 @@ fun DashboardScreen(
                 }
             }
 
+            // 9 to 12 subject material..............
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable {onNavigateToVideoLectures("9 to 12 class material")},
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
+            ){
+                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painter =
+                        painterResource(id = R.drawable.ninetotwelve),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(60.dp))
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        Text("Free Study Material School 9 to 12", fontWeight = FontWeight.Bold)
+                        Text("Maths , Science , So. Science , Hindi , more...", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+
+
         }
     }
 }

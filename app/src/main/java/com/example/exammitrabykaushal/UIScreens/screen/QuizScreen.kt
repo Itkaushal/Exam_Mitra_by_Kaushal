@@ -1,12 +1,7 @@
 package com.example.exammitrabykaushal.UIScreens.screen
 
-import android.R
-import android.graphics.fonts.FontFamily
 import android.widget.Toast
-import androidx.activity.compose.ReportDrawn
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,9 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.OutlinedButtonDefaults
+import com.example.exammitrabykaushal.DataLayer.TestResult
 import com.example.exammitrabykaushal.UIScreens.card.OptionCardWithExplanation
 import com.example.exammitrabykaushal.UIScreens.component.formatTime
 import com.example.exammitrabykaushal.ViewModel.QuizViewModel
+import com.example.exammitrabykaushal.ViewModel.TestHistoryViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -101,6 +98,29 @@ fun QuizScreen(
     }
 
     /* ---------------- RESULT SCREEN ---------------- */
+    val historyViewModel : TestHistoryViewModel = viewModel()
+
+    LaunchedEffect(isFinished) {
+        if (isFinished) {
+
+            val timeTaken = totalTime - timeLeft
+            val correctCount = score
+            val wrongCount = questions.size - score
+
+            historyViewModel.insertResult(
+                TestResult(
+                    testName = firebaseNode.replace("_", " ").uppercase(),
+                    score = score,
+                    totalQuestions = questions.size,
+                    correctCount = correctCount,
+                    wrongCount = wrongCount,
+                    timeTakenSeconds = timeTaken
+                )
+            )
+        }
+    }
+
+
     if (isFinished) {
         ReviewAndResultScreen(
             questions = questions,
