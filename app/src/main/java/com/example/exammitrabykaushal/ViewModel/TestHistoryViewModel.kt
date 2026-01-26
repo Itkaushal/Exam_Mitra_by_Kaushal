@@ -30,6 +30,12 @@ class TestHistoryViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    fun deleteHistory(result: TestResult) {
+        viewModelScope.launch {
+            repository.deleteResult(result)
+        }
+    }
+
     fun getBestScore(testName: String) : Flow<TestResult?> {
         return repository.getBestScore(testName)
     }

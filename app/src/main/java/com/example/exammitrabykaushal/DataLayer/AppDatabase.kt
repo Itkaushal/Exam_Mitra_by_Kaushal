@@ -30,6 +30,9 @@ interface HistoryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertResult(result: TestResult)
+
+    @Delete
+    suspend fun deleteResult(result: TestResult)
 }
 
 // 3. Database (The Connection)

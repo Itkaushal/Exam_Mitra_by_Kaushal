@@ -6,9 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,7 +34,7 @@ fun TestHistoryScreen(
                 title = { Text("Test History") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = null)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -62,7 +60,7 @@ fun TestHistoryScreen(
                     items = historyList,
                     key = { it.id }
                 ) { result ->
-                    HistoryItemCard(
+                    SwipeableHistoryItem(
                         result = result,
                         viewModel = viewModel
                     )
@@ -72,6 +70,43 @@ fun TestHistoryScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SwipeableHistoryItem(
+    result: TestResult,
+    viewModel: TestHistoryViewModel
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                viewModel.deleteHistory(result)
+                true
+            } else false
+        }
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 24.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = Color.Red,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+    ) {
+        HistoryItemCard(result, viewModel)
+    }
+}
 
 @Composable
 fun HistoryItemCard(
@@ -82,9 +117,10 @@ fun HistoryItemCard(
         .getBestScore(result.testName)
         .collectAsState(initial = null)
 
-    val percentage = if (result.totalQuestions > 0)
-        (result.score * 100) / result.totalQuestions
-    else 0
+    val percentage =
+        if (result.totalQuestions > 0)
+            (result.score * 100) / result.totalQuestions
+        else 0
 
     val statusColor = when {
         percentage >= 80 -> Color(0xFF43A047)
@@ -95,10 +131,9 @@ fun HistoryItemCard(
     val dateFormat = remember {
         SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
     }
-    val dateString = dateFormat.format(Date(result.date))
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(Color.White),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(14.dp)
     ) {
@@ -109,7 +144,6 @@ fun HistoryItemCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            // Percentage Circle
             Surface(
                 color = statusColor.copy(alpha = 0.15f),
                 shape = CircleShape,
@@ -117,7 +151,7 @@ fun HistoryItemCard(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
-                        text = "$percentage%",
+                        "$percentage%",
                         color = statusColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
@@ -125,19 +159,17 @@ fun HistoryItemCard(
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(Modifier.width(16.dp))
 
-            // Test info
-            Column(modifier = Modifier.weight(1f)) {
+            Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = result.testName,
+                        result.testName,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
-
                     if (bestResult?.id == result.id) {
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(Modifier.width(6.dp))
                         Icon(
                             Icons.Default.EmojiEvents,
                             contentDescription = "Best Score",
@@ -148,34 +180,31 @@ fun HistoryItemCard(
                 }
 
                 Text(
-                    text = dateString,
+                    dateFormat.format(Date(result.date)),
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
 
                 Text(
-                    text = "✔ ${result.correctCount}   ✖ ${result.wrongCount}",
+                    "✔ ${result.correctCount}   ✖ ${result.wrongCount}",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
             }
 
-            // Right stats
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${result.score}/${result.totalQuestions}",
+                    "${result.score}/${result.totalQuestions}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp
                 )
-
                 Text(
-                    text = if (percentage >= 50) "Passed" else "Failed",
+                    if (percentage >= 50) "Passed" else "Failed",
                     color = statusColor,
                     fontSize = 12.sp
                 )
-
                 Text(
-                    text = "⏱ ${result.timeTakenSeconds / 60} min",
+                    "⏱ ${result.timeTakenSeconds / 60} min",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
@@ -199,9 +228,8 @@ fun EmptyHistoryUI(padding: PaddingValues) {
                 tint = Color.Gray,
                 modifier = Modifier.size(60.dp)
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
             Text("No tests taken yet!", color = Color.Gray)
         }
     }
 }
-

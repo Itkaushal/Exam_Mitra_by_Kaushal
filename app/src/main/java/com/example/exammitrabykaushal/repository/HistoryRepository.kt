@@ -12,6 +12,9 @@ class HistoryRepository (private  val dao: HistoryDao) {
         dao.insertResult(result)
     }
 
+    suspend fun deleteResult(result: TestResult) =
+        dao.deleteResult(result)
+
     fun getBestScore(testName: String) : Flow<TestResult?> {
         return dao.getBestScore(testName)
     }
