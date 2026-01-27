@@ -107,6 +107,10 @@ fun QuizScreen(
             val correctCount = score
             val wrongCount = questions.size - score
 
+            val timeStamp = System.currentTimeMillis()
+            val totalMarks = questions.size * 100
+
+
             historyViewModel.insertResult(
                 TestResult(
                     testName = firebaseNode.replace("_", " ").uppercase(),
@@ -114,7 +118,10 @@ fun QuizScreen(
                     totalQuestions = questions.size,
                     correctCount = correctCount,
                     wrongCount = wrongCount,
-                    timeTakenSeconds = timeTaken
+                    timeTakenSeconds = timeTaken,
+
+                    timestamp = timeStamp,
+                    totalMarks = totalMarks
                 )
             )
         }

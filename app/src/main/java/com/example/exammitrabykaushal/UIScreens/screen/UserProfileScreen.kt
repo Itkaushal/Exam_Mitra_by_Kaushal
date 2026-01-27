@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,14 +41,13 @@ fun ProfileScreen(
     var userName by rememberSaveable { mutableStateOf("Guest User") }
     var userPhoto by rememberSaveable { mutableStateOf("") }
     var showEditDialog by remember { mutableStateOf(false) }
-    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
         userName = SessionManager.getUserName(context).ifBlank { "Guest User" }
         userPhoto = SessionManager.getUserPhoto(context)
 
-        Log.d("ProfileScreen", "Loaded name: $userName")
-        Log.d("ProfileScreen", "Loaded photo: $userPhoto")
+        Log.d("ProfileScreen", "Name: $userName")
+        Log.d("ProfileScreen", "Photo: $userPhoto")
     }
 
     if (showEditDialog) {
@@ -76,42 +74,46 @@ fun ProfileScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF1565C0),
                     titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    navigationIconContentColor = Color.White
                 )
             )
         }
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .verticalScroll(scrollState)
-                .background(Color(0xFFF3F6FA))
+                .verticalScroll(rememberScrollState())
+                .background(Color(0xFFF4F6FA))
         ) {
 
-            // 🔷 HEADER
+            /* ---------------- HEADER ---------------- */
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
                         Brush.verticalGradient(
-                            listOf(Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364))
+                            listOf(
+                                Color(0xFF1565C0),
+                                Color(0xFF1E88E5)
+                            )
                         ),
-                        RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                        RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
                     )
-                    .padding(vertical = 32.dp),
+                    .padding(vertical = 28.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Surface(
                         modifier = Modifier
-                            .size(110.dp)
-                            .shadow(10.dp, CircleShape),
+                            .size(96.dp)
+                            .shadow(6.dp, CircleShape),
                         shape = CircleShape,
                         color = Color.White,
-                        border = BorderStroke(3.dp, Color(0xFFFFC107))
+                        border = BorderStroke(2.dp, Color.White)
                     ) {
                         if (userPhoto.isNotBlank()) {
                             AsyncImage(
@@ -125,51 +127,53 @@ fun ProfileScreen(
                                 Icons.Default.Person,
                                 null,
                                 tint = Color.Gray,
-                                modifier = Modifier.padding(26.dp)
+                                modifier = Modifier.padding(22.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(Modifier.height(12.dp))
 
                     Text(
                         userName,
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
 
                     Text(
                         "SSC • Banking • Railway",
-                        fontSize = 13.sp,
-                        color = Color.White.copy(alpha = 0.8f)
+                        fontSize = 12.sp,
+                        color = Color.White.copy(alpha = 0.85f)
                     )
                 }
             }
 
-            // 🔷 STATS
+            /* ---------------- STATS ---------------- */
+
             Card(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .offset(y = (-24).dp),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(8.dp)
+                    .offset(y = (-20).dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    StatItem(Icons.Default.EmojiEvents, Color(0xFFFFB300), "1,420", "Rank")
-                    StatItem(Icons.Default.LocalFireDepartment, Color(0xFFFF5722), "12 Days", "Streak")
-                    StatItem(Icons.Default.TaskAlt, Color(0xFF4CAF50), "85%", "Accuracy")
+                    StatItem(Icons.Default.EmojiEvents, "1420", "Rank")
+                    StatItem(Icons.Default.LocalFireDepartment, "12", "Streak")
+                    StatItem(Icons.Default.TaskAlt, "85%", "Accuracy")
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
-            // 🔷 OPTIONS
+            /* ---------------- OPTIONS ---------------- */
+
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
                 SectionTitle("Account")
@@ -186,7 +190,7 @@ fun ProfileScreen(
                     onNavigateToHistory()
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(Modifier.height(16.dp))
 
                 SectionTitle("Danger Zone")
 
@@ -199,30 +203,37 @@ fun ProfileScreen(
                     onLogout()
                 }
             }
+
+            Spacer(Modifier.height(24.dp))
         }
     }
 }
 
-/* -------------------- COMPONENTS -------------------- */
+/* ---------------- COMPONENTS ---------------- */
 
 @Composable
 fun SectionTitle(title: String) {
     Text(
-        title,
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
+        title.uppercase(),
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 12.sp,
         color = Color.Gray,
-        modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
+        modifier = Modifier.padding(vertical = 12.dp)
     )
 }
 
 @Composable
-fun StatItem(icon: ImageVector, color: Color, value: String, label: String) {
+fun StatItem(icon: ImageVector, value: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(icon, null, tint = color, modifier = Modifier.size(28.dp))
-        Spacer(modifier = Modifier.height(4.dp))
+        Icon(
+            icon,
+            null,
+            tint = Color(0xFF1565C0),
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(Modifier.height(4.dp))
         Text(value, fontWeight = FontWeight.Bold)
-        Text(label, fontSize = 12.sp, color = Color.Gray)
+        Text(label, fontSize = 11.sp, color = Color.Gray)
     }
 }
 
@@ -236,9 +247,9 @@ fun ProfileOptionCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 6.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(14.dp),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
@@ -248,7 +259,7 @@ fun ProfileOptionCard(
             Icon(
                 icon,
                 null,
-                tint = if (isDestructive) Color.Red else Color(0xFF1E88E5)
+                tint = if (isDestructive) Color.Red else Color(0xFF1565C0)
             )
             Spacer(Modifier.width(16.dp))
             Text(
@@ -262,7 +273,7 @@ fun ProfileOptionCard(
     }
 }
 
-/* -------------------- EDIT DIALOG -------------------- */
+/* ---------------- EDIT DIALOG ---------------- */
 
 @Composable
 fun EditProfileDialog(

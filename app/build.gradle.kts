@@ -87,10 +87,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     // Coil
     implementation (libs.coil.compose)
-    // Graphs (for Analytics)
-    //implementation("com.patrykandpatrick.vico:compose-m3:2.3.6")
+    // Graphs (for Analytics using chart)
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     // extend icon compose
     implementation(libs.androidx.compose.material.icons.extended)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

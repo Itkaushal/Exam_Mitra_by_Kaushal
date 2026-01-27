@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.exammitrabykaushal.DataLayer.TestResult
+import com.example.exammitrabykaushal.UIScreens.screen.chart_scrren.AccuracyPieChart
+import com.example.exammitrabykaushal.UIScreens.screen.chart_scrren.PerformanceChart
 import com.example.exammitrabykaushal.ViewModel.TestHistoryViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,6 +32,7 @@ fun TestHistoryScreen(
     val historyList by viewModel.historyList.collectAsState()
 
     Scaffold(
+        containerColor = Color(0xFFF5F7FA),
         topBar = {
             TopAppBar(
                 title = { Text("Test History") },
@@ -49,27 +52,87 @@ fun TestHistoryScreen(
 
         if (historyList.isEmpty()) {
             EmptyHistoryUI(padding)
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(
-                    items = historyList,
-                    key = { it.id }
-                ) { result ->
-                    SwipeableHistoryItem(
-                        result = result,
-                        viewModel = viewModel
-                    )
+            return@Scaffold
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            item {
+                Text(
+                    text = "📈 Your performance is improving",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.DarkGray
+                )
+            }
+
+            // 🔹 Performance Line Chart
+            item {
+                ChartCard(title = "Accuracy Trend") {
+                    PerformanceChart(historyList = historyList)
                 }
+            }
+
+            // 🔹 Pie Chart
+            item {
+                ChartCard(title = "Overall Accuracy") {
+                    AccuracyPieChart(historyList = historyList)
+                }
+            }
+
+            // 🔹 History List
+            item {
+                Text(
+                    text = "Test Attempts",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            items(
+                items = historyList,
+                key = { it.id }
+            ) { result ->
+                SwipeableHistoryItem(
+                    result = result,
+                    viewModel = viewModel
+                )
             }
         }
     }
 }
+
+
+@Composable
+fun ChartCard(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(Color.White),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = title,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(12.dp))
+            content()
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
