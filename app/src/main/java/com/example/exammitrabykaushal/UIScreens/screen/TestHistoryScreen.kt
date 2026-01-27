@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.exammitrabykaushal.DataLayer.TestResult
 import com.example.exammitrabykaushal.ViewModel.TestHistoryViewModel
 import java.text.SimpleDateFormat
@@ -24,7 +25,7 @@ import java.util.*
 @Composable
 fun TestHistoryScreen(
     onBack: () -> Unit,
-    viewModel: TestHistoryViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: TestHistoryViewModel = viewModel()
 ) {
     val historyList by viewModel.historyList.collectAsState()
 
