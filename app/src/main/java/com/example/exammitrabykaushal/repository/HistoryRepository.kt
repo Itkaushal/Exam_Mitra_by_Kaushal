@@ -1,7 +1,7 @@
 package com.example.exammitrabykaushal.repository
 
-import com.example.exammitrabykaushal.DataLayer.HistoryDao
-import com.example.exammitrabykaushal.DataLayer.TestResult
+import com.example.exammitrabykaushal.DataLayer.Dao.HistoryDao
+import com.example.exammitrabykaushal.DataLayer.Entity.TestResult
 import kotlinx.coroutines.flow.Flow
 
 class HistoryRepository (private  val dao: HistoryDao) {

@@ -4,6 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -21,8 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.tv.material3.OutlinedButtonDefaults
-import com.example.exammitrabykaushal.DataLayer.TestResult
+import com.example.exammitrabykaushal.DataLayer.Entity.TestResult
 import com.example.exammitrabykaushal.UIScreens.card.OptionCardWithExplanation
 import com.example.exammitrabykaushal.UIScreens.component.formatTime
 import com.example.exammitrabykaushal.ViewModel.QuizViewModel
@@ -155,54 +157,94 @@ fun QuizScreen(
     if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
-            sheetState = sheetState
+            sheetState = sheetState,
         ) {
-            Column(Modifier.padding(16.dp)) {
 
-                Text("Navigate Questions", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.9f) // important
+                    .padding(16.dp)
+            ) {
+
+                /* -------- TITLE -------- */
+                Text(
+                    text = "Navigate Questions",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
                 Spacer(Modifier.height(12.dp))
 
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    questions.forEachIndexed { i, q ->
-                        AssistChip(
-                            onClick = {
-                                viewModel.goToQuestion(i)
-                                scope.launch {
-                                    sheetState.hide()
-                                    showSheet = false
+                /* -------- SCROLLABLE QUESTION GRID -------- */
+                Box(
+                    modifier = Modifier
+                        .weight(1f) // takes remaining space
+                ) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(5),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(questions) { i, q ->
+                            AssistChip(
+                                onClick = {
+                                    viewModel.goToQuestion(i)
+                                    scope.launch {
+                                        sheetState.hide()
+                                        showSheet = false
+                                    }
+                                },
+                                label = { Text("${i + 1}") },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = when {
+                                            i == safeIndex -> Icons.Default.RadioButtonChecked
+                                            userAnswers.containsKey(q.id) -> Icons.Default.CheckCircle
+                                            else -> Icons.Default.RadioButtonUnchecked
+                                        },
+                                        contentDescription = null,
+                                        tint = Color.Blue.copy(alpha = 0.6f)
+                                    )
                                 }
-                            },
-                            label = { Text("${i + 1}") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = when {
-                                        i == safeIndex -> Icons.Default.RadioButtonChecked
-                                        userAnswers.containsKey(q.id) -> Icons.Default.CheckCircle
-                                        else -> Icons.Default.RadioButtonUnchecked
-                                    },
-                                    contentDescription = null,
-                                    tint = Color.Blue.copy(alpha = 0.4f)
-                                )
-                            }
-                        )
+                            )
+                        }
                     }
                 }
 
                 Spacer(Modifier.height(16.dp))
 
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    OutlinedButton(onClick = { viewModel.finishQuiz() },
-                        border = BorderStroke(width = 1.dp, color = Color.Green.copy(alpha = 0.6f))) {
+                /* -------- FIXED ACTION BUTTONS -------- */
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    OutlinedButton(
+                        onClick = { viewModel.finishQuiz() },
+                        border = BorderStroke(1.dp, Color.Green),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Green.copy(alpha = 0.05f),
+                            contentColor = Color.Black
+                        )
+                    ) {
                         Text("Submit Test")
                     }
-                    OutlinedButton(onClick = { showSheet = false },
-                        border = BorderStroke(width = 1.dp, color = Color.Red.copy(alpha = 0.6f))) {
+
+                    OutlinedButton(
+                        onClick = { showSheet = false },
+                        border = BorderStroke(1.dp, Color.Red),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red.copy(alpha = 0.03f),
+                            contentColor = Color.Black
+                        )
+                    ) {
                         Text("Close")
                     }
                 }
             }
         }
     }
+
 
     /* ---------------- MAIN UI ---------------- */
     Scaffold(
@@ -259,20 +301,20 @@ fun QuizScreen(
                 Spacer(Modifier.width(8.dp))
                 // Pause Resume Button
                 OutlinedButton(onClick = { timerRunning = !timerRunning },
-                    border = BorderStroke(width = 1.dp, color = Color.Red),
+                    border = BorderStroke(width = 1.dp, color = Color.Gray),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red.copy(alpha = 0.02f),
+                        containerColor = if (timerRunning) Color.White else Color.Red.copy(alpha = 0.01f),
                     ),
                 ) {
                     Icon(
                         if (timerRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
                         null,
-                        tint = Color.Black
+                        tint = if (timerRunning) Color.Gray else Color.LightGray
                     )
                     Spacer(Modifier.width(5.dp))
                     Text(if (timerRunning) "Pause" else "Resume",
                         style = TextStyle(
-                            color = Color.Black,
+                            color = if (timerRunning) Color.Gray else Color.LightGray,
                             fontSize = 16.sp,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
                             textAlign = TextAlign.Center,
@@ -288,15 +330,15 @@ fun QuizScreen(
                         viewModel.finishQuiz()
                     else
                         viewModel.nextQuestion() },
-                    border = BorderStroke(width = 1.dp, color = Color.Blue),
+                    border = BorderStroke(width = 1.dp, color = Color.White),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
+                        containerColor = Color.Blue.copy(alpha = 0.7f),
                         ),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
                 ) {
                     Text(if (safeIndex == questions.lastIndex) "Submit" else "Next",
                         style = TextStyle(
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 16.sp,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
                             textAlign = TextAlign.Center,

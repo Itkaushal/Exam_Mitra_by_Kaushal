@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +28,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.exammitrabykaushal.UIScreens.session.SessionManager
 import com.example.exammitrabykaushal.UIScreens.component.ExamMitraLogo
+import com.example.exammitrabykaushal.ViewModel.DashboardViewModel
 
 
 // ---------------- DASHBOARD SCREEN ----------------
@@ -42,9 +45,14 @@ fun DashboardScreen(
     onNavigateToNineToTwelve: (String) -> Unit
     ){
 
+    //val dashboardViewModel: DashboardViewModel = viewModel()
+
     val context = LocalContext.current
     // Get User Name from Session Manager
     var userName by remember { mutableStateOf(SessionManager.getUserName(context)) }
+
+    //val streak by dashboardViewModel.streak.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -67,9 +75,15 @@ fun DashboardScreen(
                         Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
                             Icon(painter = painterResource(id =R.drawable.streak_icon), contentDescription = null,
                                 tint = Color.Red, modifier = Modifier.size(20.dp))
-                            Text(" 12 Day Streak", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                text = /*if (streak > 0) " $streak Day Streak 🔥" else*/ " Start Your Streak 🚀",
+                                style = MaterialTheme.typography.labelLarge
+                            )
+
                         }
                     }
+
+                    // profile icon button
                     IconButton(onClick = onNavigateToProfile) {
                         Icon(
                             Icons.Default.AccountCircle,

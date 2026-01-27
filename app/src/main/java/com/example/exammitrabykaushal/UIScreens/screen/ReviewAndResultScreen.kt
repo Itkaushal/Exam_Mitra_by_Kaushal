@@ -1,5 +1,6 @@
 package com.example.exammitrabykaushal.UIScreens.screen
 
+import android.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -76,9 +77,19 @@ fun ReviewAndResultScreen(
                 )
 
                 Row {
-                    OutlinedButton(onClick = onRetry) { Text("Retry") }
+                    OutlinedButton(onClick = onRetry,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black
+                        ),
+                        border = BorderStroke(width = 1.dp, color = Color.Cyan.copy(alpha = 0.4f))) { Text("Retry") }
                     Spacer(Modifier.width(8.dp))
-                    OutlinedButton(onClick = onBack) { Text("Dashboard") }
+                    OutlinedButton(onClick = onBack,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Cyan.copy(alpha = 0.3f),
+                            contentColor = Color.Black
+                        ),
+                        border = BorderStroke(width = 1.dp, color = Color.Cyan.copy(alpha = 0.4f))) { Text("Dashboard") }
                 }
             }
 

@@ -16,20 +16,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.exammitrabykaushal.DataLayer.TestResult
+import com.example.exammitrabykaushal.DataLayer.Entity.TestResult
 import com.example.exammitrabykaushal.UIScreens.screen.chart_scrren.AccuracyPieChart
 import com.example.exammitrabykaushal.UIScreens.screen.chart_scrren.PerformanceChart
 import com.example.exammitrabykaushal.ViewModel.TestHistoryViewModel
 import java.text.SimpleDateFormat
+import androidx.compose.runtime.getValue
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TestHistoryScreen(
     onBack: () -> Unit,
-    viewModel: TestHistoryViewModel = viewModel()
+    testHistoryViewModel: TestHistoryViewModel = viewModel()
 ) {
-    val historyList by viewModel.historyList.collectAsState()
+    val historyList by testHistoryViewModel.historyList.collectAsState()
 
     Scaffold(
         containerColor = Color(0xFFF5F7FA),
@@ -101,7 +102,7 @@ fun TestHistoryScreen(
             ) { result ->
                 SwipeableHistoryItem(
                     result = result,
-                    viewModel = viewModel
+                    testHistoryViewModel = testHistoryViewModel,
                 )
             }
         }
@@ -138,12 +139,12 @@ fun ChartCard(
 @Composable
 fun SwipeableHistoryItem(
     result: TestResult,
-    viewModel: TestHistoryViewModel
+    testHistoryViewModel: TestHistoryViewModel
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
-                viewModel.deleteHistory(result)
+                testHistoryViewModel.deleteHistory(result)
                 true
             } else false
         }
@@ -168,7 +169,7 @@ fun SwipeableHistoryItem(
             }
         }
     ) {
-        HistoryItemCard(result, viewModel)
+        HistoryItemCard(result, testHistoryViewModel)
     }
 }
 
@@ -177,9 +178,10 @@ fun HistoryItemCard(
     result: TestResult,
     viewModel: TestHistoryViewModel
 ) {
-    val bestResult by viewModel
+    val bestResult = viewModel
         .getBestScore(result.testName)
         .collectAsState(initial = null)
+        .value
 
     val percentage =
         if (result.totalQuestions > 0)

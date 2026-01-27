@@ -25,8 +25,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.exammitrabykaushal.UIScreens.screen.chart_scrren.AccuracyPieChart
+import com.example.exammitrabykaushal.UIScreens.screen.chart_scrren.MiniPerformanceChart
 import com.example.exammitrabykaushal.UIScreens.session.SessionManager
+import com.example.exammitrabykaushal.ViewModel.TestHistoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +41,10 @@ fun ProfileScreen(
     onNavigateToNotification: () -> Unit
 ) {
     val context = LocalContext.current
+    val viewModel: TestHistoryViewModel = viewModel()
+    val stats by viewModel.profileStats.collectAsState()
+    val history by viewModel.historyList.collectAsState()
+
 
     var userName by rememberSaveable { mutableStateOf("Guest User") }
     var userPhoto by rememberSaveable { mutableStateOf("") }
@@ -158,16 +166,29 @@ fun ProfileScreen(
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                Column(modifier = Modifier
+                    .padding(16.dp)
+                    .padding(start = 8.dp, end = 8.dp)
                 ) {
-                    StatItem(Icons.Default.EmojiEvents, "1420", "Rank")
-                    StatItem(Icons.Default.LocalFireDepartment, "12", "Streak")
-                    StatItem(Icons.Default.TaskAlt, "85%", "Accuracy")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        StatItem(Icons.Default.EmojiEvents, "${stats.rank}", "Rank")
+                        StatItem(Icons.Default.LocalFireDepartment, "${stats.streakDays}", "Streak")
+                        StatItem(Icons.Default.TaskAlt, "${stats.accuracy}%", "Accuracy")
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    MiniPerformanceChart(history)
                 }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            ChartCard(title = "OverAll Accuracy") {
+                AccuracyPieChart(historyList = history)
             }
 
             Spacer(Modifier.height(8.dp))

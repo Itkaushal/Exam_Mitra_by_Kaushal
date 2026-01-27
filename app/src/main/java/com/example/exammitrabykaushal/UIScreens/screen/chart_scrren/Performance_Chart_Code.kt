@@ -5,9 +5,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.exammitrabykaushal.DataLayer.TestResult
+import com.example.exammitrabykaushal.DataLayer.Entity.TestResult
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -29,6 +28,15 @@ fun PerformanceChart(
             .height(260.dp),
         factory = { context ->
             LineChart(context).apply {
+
+                isAutoScaleMinMaxEnabled = true
+                isDoubleTapToZoomEnabled = true
+                isHighlightPerDragEnabled = true
+                isHighlightPerTapEnabled = true
+                setDrawBorders(true)
+                setDrawGridBackground(true)
+                setDrawMarkers(true)
+                setDrawBorders(true)
 
                 description.isEnabled = false
                 setTouchEnabled(true)
