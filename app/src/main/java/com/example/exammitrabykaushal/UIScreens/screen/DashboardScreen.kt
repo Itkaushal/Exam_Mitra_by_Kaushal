@@ -37,7 +37,9 @@ import com.example.exammitrabykaushal.UIScreens.component.ExamMitraLogo
 fun DashboardScreen(
     onNavigateToTest: (String) -> Unit,
     onNavigateToProfile: () -> Unit,
-    onNavigateToVideoLectures: (String) -> Unit
+    onNavigateToVideoLectures: (String) -> Unit,
+    onNavigateToPYQ: (String) -> Unit,
+    onNavigateToNineToTwelve: (String) -> Unit
     ){
 
     val context = LocalContext.current
@@ -136,7 +138,7 @@ fun DashboardScreen(
 
             // PYQ Section
             Card(
-                modifier = Modifier.fillMaxWidth().clickable { onNavigateToTest("pyq") },
+                modifier = Modifier.fillMaxWidth().clickable { onNavigateToPYQ("pyq") },
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1))
             ) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -178,7 +180,7 @@ fun DashboardScreen(
             // 9 to 12 subject material..............
             Spacer(modifier = Modifier.height(16.dp))
             Card(
-                modifier = Modifier.fillMaxWidth().clickable {onNavigateToVideoLectures("9 to 12 class material")},
+                modifier = Modifier.fillMaxWidth().clickable {onNavigateToNineToTwelve("9 to 12 class material")},
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
             ){
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
