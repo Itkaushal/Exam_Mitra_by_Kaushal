@@ -84,7 +84,7 @@ fun NtpcPyqScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+
         ) {
 
             LazyColumn(

@@ -75,7 +75,6 @@ fun FreeVideoLecturesScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)) // Light Grey Background (Matches Dashboard)
                 .padding(16.dp)
         ) {
             // Header Section

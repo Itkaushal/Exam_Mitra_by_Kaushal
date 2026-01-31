@@ -55,8 +55,8 @@ fun ExamMitraSplashScreen(onFinish: () -> Unit) {
     val backgroundBrush = Brush.verticalGradient(
         colors = listOf(
             Color(0xFF1565C0),
-            Color(0xFF42A5F5),
-            Color(0xFF64B5F6)
+            Color(0xFFD0C6C3),
+            Color(0xFFF50B1D)
         )
     )
 

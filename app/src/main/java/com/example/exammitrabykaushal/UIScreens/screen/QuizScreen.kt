@@ -2,6 +2,7 @@ package com.example.exammitrabykaushal.UIScreens.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -47,14 +48,16 @@ fun QuizScreen(
             "math" -> "math_questions"
             "reasoning" -> "reasoning_questions"
             "gs" -> "gs_questions"
-            else -> category   // PYQ like rrb_je_2024
+            else -> category
         }
     }
+
 
     /* ---------------- LOAD QUESTIONS ---------------- */
     LaunchedEffect(firebaseNode) {
         viewModel.loadQuestions(firebaseNode)
     }
+
 
     /* ---------------- STATE ---------------- */
     val questions by viewModel.questions.collectAsState()
@@ -62,14 +65,14 @@ fun QuizScreen(
     val userAnswers by viewModel.userAnswers.collectAsState()
     val isFinished by viewModel.isFinished.collectAsState()
     val score by viewModel.score.collectAsState()
-    var showSubmitDialog by remember { mutableStateOf(false) }
 
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     /* ---------------- TIMER ---------------- */
-    val totalTime = 60 * 60
+    val timeMinutes: Int = 60
+    val totalTime = remember(timeMinutes) { timeMinutes * 60 }
     var timeLeft by remember { mutableStateOf(totalTime) }
     var timerRunning by remember { mutableStateOf(true) }
 
@@ -121,7 +124,6 @@ fun QuizScreen(
                     correctCount = correctCount,
                     wrongCount = wrongCount,
                     timeTakenSeconds = timeTaken,
-
                     timestamp = timeStamp,
                     totalMarks = totalMarks
                 )
@@ -142,6 +144,7 @@ fun QuizScreen(
                 viewModel.resetQuiz()
                 viewModel.loadQuestions(firebaseNode)
             }
+
         )
         return
     }
@@ -158,6 +161,8 @@ fun QuizScreen(
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
             sheetState = sheetState,
+            containerColor = Color.White,
+
         ) {
 
             Column(
@@ -194,7 +199,7 @@ fun QuizScreen(
                                         showSheet = false
                                     }
                                 },
-                                label = { Text("${i + 1}") },
+                                label = { Text("${i + 1}", color = Color.Black) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = when {

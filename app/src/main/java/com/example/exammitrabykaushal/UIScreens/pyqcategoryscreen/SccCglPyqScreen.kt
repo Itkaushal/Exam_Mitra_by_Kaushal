@@ -81,7 +81,7 @@ fun SscCglPyqScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)) // Light Grey Background
+                .background(Color.White) // Light Grey Background
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(16.dp),
@@ -164,7 +164,7 @@ fun ViewPdfScreenCgl(pdfUrl: String, onBack: () -> Unit) {
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(color = Color.White)
+
         ) {
 
             AndroidView(

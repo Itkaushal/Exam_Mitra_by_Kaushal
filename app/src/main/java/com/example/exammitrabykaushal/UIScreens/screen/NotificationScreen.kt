@@ -71,7 +71,6 @@ fun NotificationScreen(onBack: () -> Unit){
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
         ) {
                 // List of Tests
                 LazyColumn(

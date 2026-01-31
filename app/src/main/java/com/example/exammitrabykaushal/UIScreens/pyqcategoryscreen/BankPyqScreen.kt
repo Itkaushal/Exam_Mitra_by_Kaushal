@@ -80,7 +80,7 @@ fun BankPyqScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)) // Light Grey Background
+        // Light Grey Background
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(16.dp),

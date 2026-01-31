@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.exammitrabykaushal.DataLayer.Dao.HistoryDao
 import com.example.exammitrabykaushal.DataLayer.Database.AppDatabase
 import com.example.exammitrabykaushal.DataLayer.Entity.TestResult
+import com.example.exammitrabykaushal.model.ProfileStats
 import com.example.exammitrabykaushal.repository.HistoryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,11 +15,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class ProfileStats(
-    val accuracy: Int = 0,
-    val streakDays: Int = 0,
-    val rank: Int = 0
-)
 class TestHistoryViewModel(application: Application,
     ) : AndroidViewModel(application) {
 

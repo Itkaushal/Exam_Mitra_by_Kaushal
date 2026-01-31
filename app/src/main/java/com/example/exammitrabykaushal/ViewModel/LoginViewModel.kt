@@ -2,6 +2,7 @@ package com.example.exammitrabykaushal.ViewModel
 
 import androidx.lifecycle.ViewModel
 import com.example.exammitrabykaushal.UIScreens.auth.SignInResult
+import com.example.exammitrabykaushal.model.SignInState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -22,9 +23,3 @@ class LoginViewModel : ViewModel() {
         _state.value = SignInState()
     }
 }
-
-data class SignInState(
-    val isSignInSuccessful: Boolean = false,
-    val signInResult: SignInResult? = null,
-    val signInError: String? = null
-)

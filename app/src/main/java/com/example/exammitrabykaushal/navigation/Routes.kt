@@ -18,6 +18,21 @@ object Routes {
     const val QUIZ = "quiz/{category}"
     fun quiz(category: String) = "quiz/$category"
 
+    // Create Test
+    const val CREATE_TEST_HOME = "create_test_home"
+    const val TEST_CONFIG = "test_config/{category}"
+    fun testConfig(category: String) = "test_config/$category"
+
+    // Test (Create Test Flow)
+    const val TEST_SCREEN = "test_screen/{category}/{questions}/{time}"
+    fun testScreen(
+        category: String,
+        questions: Int,
+        time: Int
+    ) = "test_screen/$category/$questions/$time"
+
+
+
     // PYQ
     const val PYQ_SELECTION = "pyq_selection"
     const val UPSC = "pyq_upsc"
@@ -40,7 +55,7 @@ object Routes {
     const val COMPUTER = "video_computer"
     const val CA = "video_ca"
 
-    // 9–12 Section
+    /*// 9–12 Section
     const val NINE_TO_TWELVE_HOME = "nine_to_twelve_home"
     const val CLASS_9 = "class_9"
     const val CLASS_10 = "class_10"
@@ -49,6 +64,6 @@ object Routes {
 
     const val CLASS_SUBJECT = "class_subject/{class}/{subject}"
     fun classSubject(className: String, subject: String) =
-        "class_subject/$className/$subject"
+        "class_subject/$className/$subject"*/
 
 }

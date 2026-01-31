@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
+    id("kotlin-parcelize")
     alias(libs.plugins.google.gms.google.services)
 }
 
@@ -54,6 +55,8 @@ dependencies {
     // Room
     implementation (libs.androidx.room.runtime)
     implementation(libs.androidx.tv.material)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.remote.creation.core)
     annotationProcessor (libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     // Navigation

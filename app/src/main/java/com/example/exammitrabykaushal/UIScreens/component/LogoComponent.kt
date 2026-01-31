@@ -41,7 +41,7 @@ fun ExamMitraLogo(modifier: Modifier = Modifier) {
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color(0xFF1565C0), // Royal Blue
-                            Color(0xFF64B5F6)  // Light Blue
+                            Color(0xFFF18A69)  // Light Blue
                         )
                     )
                 )

@@ -93,7 +93,6 @@ fun ProfileScreen(
                 .padding(padding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(Color(0xFFF4F6FA))
         ) {
 
             /* ---------------- HEADER ---------------- */

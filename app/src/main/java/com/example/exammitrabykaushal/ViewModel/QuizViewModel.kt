@@ -40,26 +40,16 @@ class QuizViewModel : ViewModel() {
     /* ---------------- LOAD QUESTIONS (GENERIC) ---------------- */
 
     fun loadQuestions(firebaseNode: String) {
-
-        Log.d("QUIZ_VM", "Loading questions from node: $firebaseNode")
-
         val ref = FirebaseDatabase.getInstance()
             .getReference(firebaseNode)
-
         ref.get()
             .addOnSuccessListener { snapshot ->
 
                 val list = snapshot.children.mapNotNull { qSnap ->
-
                     val id = qSnap.key ?: return@mapNotNull null
-                    val text = qSnap.child("text")
-                        .getValue(String::class.java) ?: return@mapNotNull null
-
-                    val correctIndex = qSnap.child("correctIndex")
-                        .getValue(Int::class.java) ?: return@mapNotNull null
-
-                    val explanation = qSnap.child("explanation")
-                        .getValue(String::class.java) ?: ""
+                    val text = qSnap.child("text").getValue(String::class.java) ?: return@mapNotNull null
+                    val correctIndex = qSnap.child("correctIndex").getValue(Int::class.java) ?: return@mapNotNull null
+                    val explanation = qSnap.child("explanation").getValue(String::class.java) ?: ""
 
                     val options = qSnap.child("options")
                         .children
@@ -68,24 +58,18 @@ class QuizViewModel : ViewModel() {
 
                     if (options.isEmpty()) return@mapNotNull null
 
-                    Question(
-                        id = id,
-                        text = text,
-                        options = options,
-                        correctIndex = correctIndex,
-                        explanation = explanation
-                    )
+                    Question(id, text, options, correctIndex, explanation)
                 }
 
                 _questions.value = list
                 resetQuiz()
+            }
+            .addOnFailureListener {
+                Log.e("Firebase", "Error getting data", it)
+            }
 
-                Log.d("QUIZ_VM", "✅ Loaded ${list.size} questions from $firebaseNode")
-            }
-            .addOnFailureListener { e ->
-                Log.e("QUIZ_VM", "❌ Firebase error", e)
-            }
     }
+
 
     /* ---------------- USER ACTIONS ---------------- */
 
@@ -115,9 +99,6 @@ class QuizViewModel : ViewModel() {
         _isFinished.value = true
     }
 
-    fun submitQuiz(){
-        _isFinished.value = true
-    }
 
     /* ---------------- RESET (USED BY RETRY) ---------------- */
 

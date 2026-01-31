@@ -25,6 +25,7 @@ fun AppNavGraph(navController: NavHostController) {
         videoNavGraph(navController)
         quizNavGraph(navController)
         notificationNavGraph(navController)
-        nineToTwelveNavGraph(navController)
+        createTestNavGraph(navController)
+
     }
 }

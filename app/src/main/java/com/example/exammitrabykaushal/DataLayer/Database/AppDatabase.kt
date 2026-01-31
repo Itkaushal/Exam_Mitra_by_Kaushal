@@ -19,6 +19,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun testHistoryDao(): HistoryDao
 
+
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
 

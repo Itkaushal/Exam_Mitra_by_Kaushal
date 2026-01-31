@@ -1,5 +1,6 @@
 package com.example.exammitrabykaushal.UIScreens.screen
 
+import androidx.compose.foundation.background
 import com.example.exammitrabykaushal.R
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -8,13 +9,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.*
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.exammitrabykaushal.UIScreens.session.SessionManager
 import com.example.exammitrabykaushal.UIScreens.component.ExamMitraLogo
-import com.example.exammitrabykaushal.ViewModel.DashboardViewModel
 
 
 // ---------------- DASHBOARD SCREEN ----------------
@@ -39,20 +39,15 @@ import com.example.exammitrabykaushal.ViewModel.DashboardViewModel
 @Composable
 fun DashboardScreen(
     onNavigateToTest: (String) -> Unit,
+    onNavigateToCreateTest: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onNavigateToVideoLectures: (String) -> Unit,
-    onNavigateToPYQ: (String) -> Unit,
-    onNavigateToNineToTwelve: (String) -> Unit
-    ){
-
-    //val dashboardViewModel: DashboardViewModel = viewModel()
+    onNavigateToPYQ: (String) -> Unit
+){
 
     val context = LocalContext.current
     // Get User Name from Session Manager
     var userName by remember { mutableStateOf(SessionManager.getUserName(context)) }
-
-    //val streak by dashboardViewModel.streak.collectAsState()
-
 
     Scaffold(
         topBar = {
@@ -130,19 +125,23 @@ fun DashboardScreen(
                 fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Absolute.Center) {
                 FeatureCard("Mock Test",
                     icon = painterResource(id = R.drawable.mock_test),
-                    Color(0xFFE3F2FD)) { onNavigateToTest("full_length") }
+                    Color(0xFFE3F2FD),
+                ) { onNavigateToTest("full_length") }
+                Spacer(modifier = Modifier.width(30.dp))
                 FeatureCard("Math Test",
                     icon = painterResource(id = R.drawable.math_test),
-                    Color(0xFFE8F5E9)) { onNavigateToTest("math") }
+                    Color(0xFFE8F5E9)
+                ) { onNavigateToTest("math") }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Absolute.Center) {
                 FeatureCard("Reasoning",
                     icon = painterResource(id = R.drawable.reasoning_test),
                     Color(0xFFFFF3E0)) { onNavigateToTest("reasoning") }
+                Spacer(modifier = Modifier.width(30.dp))
                 FeatureCard("General Studies",
                     icon = painterResource(id = R.drawable.gkgs_test),
                     Color(0xFFF3E5F5)) { onNavigateToTest("gs") }
@@ -159,12 +158,12 @@ fun DashboardScreen(
                     Icon(painter = painterResource(id = R.drawable.pyq_icons)
                         , contentDescription = null,
                         tint = Color.Unspecified,
-                        modifier = Modifier.size(60.dp))
-
+                        modifier = Modifier.size(60.dp)
+                    )
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
-                        Text("Previous Year Papers", fontWeight = FontWeight.Bold)
-                        Text("SSC , Railway, Police, Banking, State exams...", style = MaterialTheme.typography.bodySmall)
+                        Text("Previous Year Papers", fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text("SSC , Railway, Police, Banking, State exams...", style = MaterialTheme.typography.bodySmall, color = Color.Black)
                     }
                 }
             }
@@ -185,33 +184,41 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Column {
-                        Text("Free Video Lectures", fontWeight = FontWeight.Bold)
-                        Text("Maths , Reasoning, GK/Gs, English, by best teachers...", style = MaterialTheme.typography.bodySmall)
+                        Text("Free Video Lectures", fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text("Maths , Reasoning, GK/Gs, English, by best teachers...", style = MaterialTheme.typography.bodySmall,color = Color.Black)
                     }
                 }
             }
 
-            // 9 to 12 subject material..............
+
+            // Create Test here
             Spacer(modifier = Modifier.height(16.dp))
             Card(
-                modifier = Modifier.fillMaxWidth().clickable {onNavigateToNineToTwelve("9 to 12 class material")},
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
-            ){
-                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(painter =
-                        painterResource(id = R.drawable.ninetotwelve),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToCreateTest() },
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9))
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AddCircle,
                         contentDescription = null,
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(60.dp))
+                        tint = Color(0xFF2E7D32),
+                        modifier = Modifier.size(60.dp)
+                    )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(Modifier.width(16.dp))
 
                     Column {
-                        Text("Free Study Material School 9 to 12", fontWeight = FontWeight.Bold)
-                        Text("Maths , Science , So. Science , Hindi , more...", style = MaterialTheme.typography.bodySmall)
+                        Text("Create Your Own Test", fontWeight = FontWeight.Bold,color = Color.Black)
+                        Text("Choose subject, questions & time", style = MaterialTheme.typography.bodySmall,color = Color.Black)
                     }
                 }
             }
+
 
 
         }
@@ -232,7 +239,9 @@ fun FeatureCard(title: String, icon: Painter, color: Color, onClick: () -> Unit)
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(painter = icon, contentDescription = null, modifier = Modifier.size(32.dp), tint = Color.Black)
+            Icon(painter = icon, contentDescription = null,
+                modifier = Modifier.size(32.dp),
+                tint = Color.Black)
             Spacer(modifier = Modifier.height(8.dp))
             Text(title, fontWeight = FontWeight.Medium, color = Color.Black)
         }
